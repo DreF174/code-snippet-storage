@@ -1,0 +1,96 @@
+from constraint import Problem
+
+# Step 1. Create a new `Problem` instance. This will be the object where you define your variables and constraints.
+problem = Problem()
+
+# Step 2. Identify the LSAT game type and explain why.
+# This game type is an ordering game because the participants are students being ordered given certain rules and constraints.
+
+# Step 3. Identify and define the variables and domains.   
+# Define the variables
+# In this case, the variables are the students.
+students = ['Fernando', 'Ginny', 'Hakim', 'Juanita', 'Kevin']
+# Define the domains
+# In this case, the domain is the position in the performance order.
+position_in_performance_order = [1, 2, 3, 4, 5]
+
+#Step 4. # Identify any domains that require ordering and create a dictionary mapping numbers to the objects in the domain.
+# In this question, the order in which the students perform needs to be ordered, so we will create a dictionary mapping numbers to the order in which the students perform.
+# Create a dictionary mapping a position in the performance order to a student
+position_in_performance_order = {1: 'Fernando', 2: 'Ginny', 3: 'Hakim', 4: 'Juanita', 5: 'Kevin'}
+
+
+# Step 5. Add variables and domains to the problem
+for student in students:
+    problem.addVariable(student, position_in_performance_order)
+    
+# Step 6. Add the orignal constraints. Each rule translates to a constraint in your problem.
+
+#Rule 1: Each student performs in the recital in a different order.
+#Because the number of students is equal to the number of positions in the performance order, we can use the AllDifferentConstraint() to ensure that each student performs in a different order.
+problem.addConstraint(AllDifferentConstraint(), students)
+#Rule 2: Ginny perform earlier than Fernando.
+problem.addConstraint(lambda g, f: g < f, ('Ginny', 'Fernando'))
+#Rule 3: Kevin perform earlier than Hakim and Juanita.
+problem.addConstraint(lambda k, h, j: k < h and k < j, ('Kevin', 'Hakim', 'Juanita'))
+#Rule 4: Hakim perform either immediately before or immediately after Fernando.
+problem.addConstraint(lambda h, f: h == f - 1 or h == f + 1, ('Hakim', 'Fernando'))
+
+# Step 7. Determine all possible solutions that exist after applying the original rules stated above. These rules and constraints will be assumed and imposed on the answer choices below
+solutions = problem.getSolutions()
+#print(solutions)
+#print("The possible solutions are: " + str(solutions))
+#count the number of solutions
+print("problem_professor_students_1_D The number of possible solutions is: " + str(len(solutions)))
+
+# Step 8: Determine if each answer choice is possible by adding the question constraint to the answer choice constraint and seeing if the answer choice is satisfied by the possible solutions.
+
+# The Python function answer_a() is designed to iterate over a collection called solutions. If the function iterates over the entire solutions collection and does not find any item where the order is Ginny, Fernando, Hakim, Kevin, Juanita, it will return False.
+def answer_a():
+    for solution in solutions:
+        # Ginny, Fernando, Hakim, Kevin, Juanita
+        if solution['Ginny'] == 1 and solution['Fernando'] == 2 and solution['Hakim'] == 3 and solution['Kevin'] == 4 and solution['Juanita'] == 5:
+            return True
+    return False
+#print(answer_a())
+print(str(answer_a()) + ' - Answer A: Ginny, Fernando, Hakim, Kevin, Juanita.')
+
+# The Python function answer_b() is designed to iterate over a collection called solutions. If the function iterates over the entire solutions collection and does not find any item where the order is Ginny, Juanita, Kevin, Hakim, Fernando, it will return False.
+def answer_b():
+    for solution in solutions:
+        # Ginny, Juanita, Kevin, Hakim, Fernando
+        if solution['Ginny'] == 1 and solution['Juanita'] == 2 and solution['Kevin'] == 3 and solution['Hakim'] == 4 and solution['Fernando'] == 5:
+            return True
+    return False
+#print(answer_b())
+print(str(answer_b()) + ' - Answer B: Ginny, Juanita, Kevin, Hakim, Fernando.')
+
+# The Python function answer_c() is designed to iterate over a collection called solutions. If the function iterates over the entire solutions collection and does not find any item where the order is Ginny, Kevin, Hakim, Juanita, Fernando, it will return False.
+def answer_c():
+    for solution in solutions:
+        # Ginny, Kevin, Hakim, Juanita, Fernando
+        if solution['Ginny'] == 1 and solution['Kevin'] == 2 and solution['Hakim'] == 3 and solution['Juanita'] == 4 and solution['Fernando'] == 5:
+            return True
+    return False
+#print(answer_c())
+print(str(answer_c()) + ' - Answer C: Ginny, Kevin, Hakim, Juanita, Fernando.')
+
+# The Python function answer_d() is designed to iterate over a collection called solutions. If the function iterates over the entire solutions collection and does not find any item where the order is Kevin, Ginny, Juanita, Fernando, Hakim, it will return False.
+def answer_d():
+    for solution in solutions:
+        # Kevin, Ginny, Juanita, Fernando, Hakim
+        if solution['Kevin'] == 1 and solution['Ginny'] == 2 and solution['Juanita'] == 3 and solution['Fernando'] == 4 and solution['Hakim'] == 5:
+            return True
+    return False
+#print(answer_d())
+print(str(answer_d()) + ' - Answer D: Kevin, Ginny, Juanita, Fernando, Hakim.')
+
+# The Python function answer_e() is designed to iterate over a collection called solutions. If the function iterates over the entire solutions collection and does not find any item where the order is Kevin, Juanita, Fernando, Hakim, Ginny, it will return False.
+def answer_e():
+    for solution in solutions:
+        # Kevin, Juanita, Fernando, Hakim, Ginny
+        if solution['Kevin'] == 1 and solution['Juanita'] == 2 and solution['Fernando'] == 3 and solution['Hakim'] == 4 and solution['Ginny'] == 5:
+            return True
+    return False
+#print(answer_e())
+print(str(answer_e()) + ' - Answer E: Kevin, Juanita, Fernando, Hakim, Ginny.')
