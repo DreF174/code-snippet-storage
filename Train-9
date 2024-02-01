@@ -1,0 +1,167 @@
+from constraint import Problem
+
+# Step 1. Create a new `Problem` instance. This will be the object where you define your variables and constraints.
+problem = Problem()
+
+# Step 2. Identify the LSAT game type and explain why.
+# This game type is an ordering game because the participants are compositions being put into a specific order.
+
+# Step 3. Identify and define the variables of the problem.
+# Define the variables
+# In this case, the variables are the compositions.
+compositions = ['F', 'H', 'L', 'O', 'P', 'R', 'S', 'T']
+# Define the domains
+# In this case, the domains are the positions: first, second, third, fourth, fifth, sixth, seventh, and eighth.
+positions = [1, 2, 3, 4, 5, 6, 7, 8]
+
+#Step 4. # Identify any domains that require ordering and create a dictionary mapping numbers to the objects in the domain.
+# In this case the positions are already ordered, so we will not create a dictionary mapping numbers to the positions.
+
+# Step 5. Add variables and domains to the problem
+for composition in compositions:
+    problem.addVariable(composition, positions)
+    
+# Step 6. Add the orignal constraints. Each rule translates to a constraint in your problem.
+
+#Rule 1: Exactly eight compositions—F, H, L, O, P, R, S, and T—are to be performed exactly once each, consecutively and one composition at a time.
+# Add a constraint that ensures that exactly eight compositions—F, H, L, O, P, R, S, and T—are to be performed exactly once each, consecutively and one composition at a time, in that order.
+def rule_1_constraint(f, h, l, o, p, r, s, t):
+    # Ensure that exactly eight compositions are performed
+    return len(set([f, h, l, o, p, r, s, t])) == 8
+# Add the constraint to the problem
+problem.addConstraint(rule_1_constraint, ('F', 'H', 'L', 'O', 'P', 'R', 'S', 'T'))
+
+#Rule 2: T is performed either immediately before F or immediately after R.
+# Add a constraint that ensures that T is performed either immediately before F or immediately after R.
+def rule_2_constraint(t, f, r):
+    # If T is performed immediately before F
+    if t == f - 1:
+        return True
+    # If T is performed immediately after R
+    if t == r + 1:
+        return True
+    return False
+# Add the constraint to the problem
+problem.addConstraint(rule_2_constraint, ('T', 'F', 'R'))
+
+#Rule 3: At least two compositions are performed either after F and before R, or after R and before F.
+# Add a constraint that ensures that at least two compositions are performed either after F and before R, or after R and before F.
+def rule_3_constraint(f, r):
+    # If at least two compositions are performed after F and before R
+    if r - f > 2:
+        return True
+    # If at least two compositions are performed after R and before F
+    if f - r > 2:
+        return True
+    return False
+
+problem.addConstraint(rule_3_constraint, ('F', 'R'))
+
+#Rule 4: O is performed either first or fifth.
+# Add a constraint that ensures that O is performed either first or fifth.
+def rule_4_constraint(o):
+    # If O is performed first
+    if o == 1:
+        return True
+    # If O is performed fifth
+    if o == 5:
+        return True
+    return False
+# Add the constraint to the problem
+problem.addConstraint(rule_4_constraint, ('O',))
+
+#Rule 5: The eighth composition performed is either L or H.
+# Add a constraint that ensures that the eighth composition performed is either L or H.
+def rule_5_constraint(l, h):
+    # If the eighth composition performed is L
+    if l == 8:
+        return True
+    # If the eighth composition performed is H
+    if h == 8:
+        return True
+    return False
+# Add the constraint to the problem
+problem.addConstraint(rule_5_constraint, ('L', 'H'))
+
+#Rule 6: P is performed at some time before S.
+# Add a constraint that ensures that P is performed at some time before S.
+def rule_6_constraint(p, s):
+    # If P is performed before S
+    if p < s:
+        return True
+    return False
+# Add the constraint to the problem
+problem.addConstraint(rule_6_constraint, ('P', 'S'))
+
+#Rule 7: At least one composition is performed either after O and before S, or after S and before O.
+# Add a constraint that ensures that at least one composition is performed either after O and before S, or after S and before O.
+def rule_7_constraint(o, s):
+    # If at least one composition is performed after O and before S
+    if s - o > 1:
+        return True
+    # If at least one composition is performed after S and before O
+    if o - s > 1:
+        return True
+    return False
+# Add the constraint to the problem
+problem.addConstraint(rule_7_constraint, ('O', 'S'))
+
+# Step 7. Determine all possible solutions that exist after applying the original rules stated above. These rules and constraints will be assumed and imposed on the answer choices below,
+       						
+solutions = problem.getSolutions()
+#print(solutions)
+#print("The possible solutions are: " + str(solutions))
+#count the number of solutions
+print("problem_200010_3-G_3_12_A - the number of possible solutions is: " + str(len(solutions)))
+
+# Step 8: Determine if each answer choice is possible by adding the question constraint to the answer choice constraint and seeing if the answer choice is satisfied by the possible solutions.
+
+# Answer A. L, P, S, R, O, T, F, H
+#The function for Answer A is designed to incorporate the question rule and iterate over a collection called solutions. The function assumes that L, P, S, R, O, T, F, H are performed in that order and checks to see if it is possible for them to be performed in that order. If the function iterates over the entire solutions collection and finds any order where L, P, S, R, O, T, F, H are performed in that order, it will return True.
+def answer_a():
+    for solution in solutions:
+        if solution['L'] == 1 and solution['P'] == 2 and solution['S'] == 3 and solution['R'] == 4 and solution['O'] == 5 and solution['T'] == 6 and solution['F'] == 7 and solution['H'] == 8:
+            return True
+    return False
+#print(answer_a())
+print(str(answer_a()) + ' - Answer A: L, P, S, R, O, T, F, H.')
+
+# Answer B. O, T, P, F, S, H, R, L
+#The function for Answer B is designed to incorporate the question rule and iterate over a collection called solutions. The function assumes that O, T, P, F, S, H, R, L are performed in that order and checks to see if it is possible for them to be performed in that order. If the function iterates over the entire solutions collection and finds any order where O, T, P, F, S, H, R, L are performed in that order, it will return True.
+def answer_b():
+    for solution in solutions:
+        if solution['O'] == 1 and solution['T'] == 2 and solution['P'] == 3 and solution['F'] == 4 and solution['S'] == 5 and solution['H'] == 6 and solution['R'] == 7 and solution['L'] == 8:
+            return True
+    return False
+#print(answer_b())
+print(str(answer_b()) + ' - Answer B: O, T, P, F, S, H, R, L.')
+
+# Answer C. P, T, F, S, L, R, O, H
+#The function for Answer C is designed to incorporate the question rule and iterate over a collection called solutions. The function assumes that P, T, F, S, L, R, O, H are performed in that order and checks to see if it is possible for them to be performed in that order. If the function iterates over the entire solutions collection and finds any order where P, T, F, S, L, R, O, H are performed in that order, it will return True.
+def answer_c():
+    for solution in solutions:
+        if solution['P'] == 1 and solution['T'] == 2 and solution['F'] == 3 and solution['S'] == 4 and solution['L'] == 5 and solution['R'] == 6 and solution['O'] == 7 and solution['H'] == 8:
+            return True
+    return False
+#print(answer_c())
+print(str(answer_c()) + ' - Answer C: P, T, F, S, L, R, O, H.')
+
+# Answer D. P, T, F, S, O, R, L, H
+#The function for Answer D is designed to incorporate the question rule and iterate over a collection called solutions. The function assumes that P, T, F, S, O, R, L, H are performed in that order and checks to see if it is possible for them to be performed in that order. If the function iterates over the entire solutions collection and finds any order where P, T, F, S, O, R, L, H are performed in that order, it will return True.
+def answer_d():
+    for solution in solutions:
+        if solution['P'] == 1 and solution['T'] == 2 and solution['F'] == 3 and solution['S'] == 4 and solution['O'] == 5 and solution['R'] == 6 and solution['L'] == 7 and solution['H'] == 8:
+            return True
+    return False
+#print(answer_d())
+print(str(answer_d()) + ' - Answer D: P, T, F, S, O, R, L, H.')
+
+# Answer E. T, F, P, R, O, L, S, H
+#The function for Answer E is designed to incorporate the question rule and iterate over a collection called solutions. The function assumes that T, F, P, R, O, L, S, H are performed in that order and checks to see if it is possible for them to be performed in that order. If the function iterates over the entire solutions collection and finds any order where T, F, P, R, O, L, S, H are performed in that order, it will return True.
+def answer_e():
+    for solution in solutions:
+        if solution['T'] == 1 and solution['F'] == 2 and solution['P'] == 3 and solution['R'] == 4 and solution['O'] == 5 and solution['L'] == 6 and solution['S'] == 7 and solution['H'] == 8:
+            return True
+    return False
+#print(answer_e())
+print(str(answer_e()) + ' - Answer E: T, F, P, R, O, L, S, H.')
