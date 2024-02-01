@@ -4,93 +4,101 @@ from constraint import Problem
 problem = Problem()
 
 # Step 2. Identify the LSAT game type and explain why.
-# This game type is an ordering game because the participants are students being ordered given certain rules and constraints.
+# This game type is an assignment game because the participants are cashiers being assigned days of the week to work given certain rules and constraints.
 
-# Step 3. Identify and define the variables and domains.   
+# Step 3. Identify and define the variables of the problem.
 # Define the variables
-# In this case, the variables are the students.
-students = ['Fernando', 'Ginny', 'Hakim', 'Juanita', 'Kevin']
+# The variables are the cashiers
+cashiers = ['Adams', 'Bates', 'Cox', 'Drake', 'Edwards']
 # Define the domains
-# In this case, the domain is the position in the performance order.
-position_in_performance_order = [1, 2, 3, 4, 5]
+# The domains are the work days of the week.
+work_days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday']
 
 #Step 4. # Identify any domains that require ordering and create a dictionary mapping numbers to the objects in the domain.
-# In this question, the order in which the students perform needs to be ordered, so we will create a dictionary mapping numbers to the order in which the students perform.
-# Create a dictionary mapping a position in the performance order to a student
-position_in_performance_order = {1: 'Fernando', 2: 'Ginny', 3: 'Hakim', 4: 'Juanita', 5: 'Kevin'}
-
+# In this case, the work days need to be ordered, so we will create a dictionary mapping numbers to the work days.
+# Create a dictionary mapping the days of the week to numbers
+work_days = {1: 'Monday', 2: 'Tuesday', 3: 'Wednesday', 4: 'Thursday', 5: 'Friday'}
 
 # Step 5. Add variables and domains to the problem
-for student in students:
-    problem.addVariable(student, position_in_performance_order)
+for cashier in cashiers:
+    problem.addVariable(cashier, work_days)
     
 # Step 6. Add the orignal constraints. Each rule translates to a constraint in your problem.
 
-#Rule 1: Each student performs in the recital in a different order.
-#Because the number of students is equal to the number of positions in the performance order, we can use the AllDifferentConstraint() to ensure that each student performs in a different order.
-problem.addConstraint(AllDifferentConstraint(), students)
-#Rule 2: Ginny perform earlier than Fernando.
-problem.addConstraint(lambda g, f: g < f, ('Ginny', 'Fernando'))
-#Rule 3: Kevin perform earlier than Hakim and Juanita.
-problem.addConstraint(lambda k, h, j: k < h and k < j, ('Kevin', 'Hakim', 'Juanita'))
-#Rule 4: Hakim perform either immediately before or immediately after Fernando.
-problem.addConstraint(lambda h, f: h == f - 1 or h == f + 1, ('Hakim', 'Fernando'))
+#Rule 1: Each cashier works alone on exactly one day, Monday through Friday. 
+#Because the number of cashiers is equal to the number of days of the week, and none of the answer constraints creates a disparity between the number of cashiers and the number of days of the week, we can use the AllDifferentConstraint() to ensure that each cashier works alone on exactly one day.
+problem.addConstraint(AllDifferentConstraint(), cashiers)
+
+#Rule 2: Adams will work only on Tuesday or Thursday.
+problem.addConstraint(lambda a: a == 2 or a == 4, ('Adams',))
+
+#Rule 3: Bates will not work on Monday or Wednesday.
+problem.addConstraint(lambda b: b != 1 and b != 3, ('Bates',))
+
+#Rule 4: Cox works on Friday.
+problem.addConstraint(lambda c: c == 5, ('Cox',))
+
+# Rule 5: Edwards cannot work next to Drake.
+problem.addConstraint(lambda e, d: e != d + 1 and e != d - 1, ('Edwards', 'Drake'))
 
 # Step 7. Determine all possible solutions that exist after applying the original rules stated above. These rules and constraints will be assumed and imposed on the answer choices below
 solutions = problem.getSolutions()
 #print(solutions)
 #print("The possible solutions are: " + str(solutions))
 #count the number of solutions
-print("problem_professor_students_1_D The number of possible solutions is: " + str(len(solutions)))
+print("problem_cashiers_1_D The number of possible solutions is: " + str(len(solutions)))
 
 # Step 8: Determine if each answer choice is possible by adding the question constraint to the answer choice constraint and seeing if the answer choice is satisfied by the possible solutions.
 
-# The Python function answer_a() is designed to iterate over a collection called solutions. If the function iterates over the entire solutions collection and does not find any item where the order is Ginny, Fernando, Hakim, Kevin, Juanita, it will return False.
+# The Python function answer_a() is designed to iterate over a collection called solutions. If the function iterates over the entire solutions collection and does not find any item where the order is Edwards, Bates, Adams, Drake, Cox, it will return False.
+#
 def answer_a():
     for solution in solutions:
-        # Ginny, Fernando, Hakim, Kevin, Juanita
-        if solution['Ginny'] == 1 and solution['Fernando'] == 2 and solution['Hakim'] == 3 and solution['Kevin'] == 4 and solution['Juanita'] == 5:
+        # Edwards, Bates, Adams, Drake, Cox
+        if solution['Edwards'] == 1 and solution['Bates'] == 2 and solution['Adams'] == 3 and solution['Drake'] == 4 and solution['Cox'] == 5:
             return True
     return False
 #print(answer_a())
-print(str(answer_a()) + ' - Answer A: Ginny, Fernando, Hakim, Kevin, Juanita.')
+print(str(answer_a()) + ' - Answer A: Edwards, Bates, Adams, Drake, Cox.')
+  
 
-# The Python function answer_b() is designed to iterate over a collection called solutions. If the function iterates over the entire solutions collection and does not find any item where the order is Ginny, Juanita, Kevin, Hakim, Fernando, it will return False.
+# The Python function answer_b() is designed to iterate over a collection called solutions. If the function iterates over the entire solutions collection and does not find any item where the order is Drake, Adams, Bates, Edwards, Cox, it will return False.
 def answer_b():
     for solution in solutions:
-        # Ginny, Juanita, Kevin, Hakim, Fernando
-        if solution['Ginny'] == 1 and solution['Juanita'] == 2 and solution['Kevin'] == 3 and solution['Hakim'] == 4 and solution['Fernando'] == 5:
+        # Drake, Adams, Bates, Edwards, Cox
+        if solution['Drake'] == 1 and solution['Adams'] == 2 and solution['Bates'] == 3 and solution['Edwards'] == 4 and solution['Cox'] == 5:
             return True
     return False
 #print(answer_b())
-print(str(answer_b()) + ' - Answer B: Ginny, Juanita, Kevin, Hakim, Fernando.')
+print(str(answer_b()) + ' - Answer B: Drake, Adams, Bates, Edwards, Cox.')
 
-# The Python function answer_c() is designed to iterate over a collection called solutions. If the function iterates over the entire solutions collection and does not find any item where the order is Ginny, Kevin, Hakim, Juanita, Fernando, it will return False.
+# The Python function answer_c() is designed to iterate over a collection called solutions. If the function iterates over the entire solutions collection and does not find any item where the order is Edwards, Adams, Cox, Bates, Drake, it will return False.
 def answer_c():
     for solution in solutions:
-        # Ginny, Kevin, Hakim, Juanita, Fernando
-        if solution['Ginny'] == 1 and solution['Kevin'] == 2 and solution['Hakim'] == 3 and solution['Juanita'] == 4 and solution['Fernando'] == 5:
+        # Edwards, Adams, Cox, Bates, Drake
+        if solution['Edwards'] == 1 and solution['Adams'] == 2 and solution['Cox'] == 3 and solution['Bates'] == 4 and solution['Drake'] == 5:
             return True
     return False
 #print(answer_c())
-print(str(answer_c()) + ' - Answer C: Ginny, Kevin, Hakim, Juanita, Fernando.')
+print(str(answer_c()) + ' - Answer C: Edwards, Adams, Cox, Bates, Drake.')
 
-# The Python function answer_d() is designed to iterate over a collection called solutions. If the function iterates over the entire solutions collection and does not find any item where the order is Kevin, Ginny, Juanita, Fernando, Hakim, it will return False.
+# The Python function answer_d() is designed to iterate over a collection called solutions. If the function iterates over the entire solutions collection and does not find any item where the order is Edwards, Adams, Drake, Bates, Cox, it will return False.
 def answer_d():
     for solution in solutions:
-        # Kevin, Ginny, Juanita, Fernando, Hakim
-        if solution['Kevin'] == 1 and solution['Ginny'] == 2 and solution['Juanita'] == 3 and solution['Fernando'] == 4 and solution['Hakim'] == 5:
+        # Edwards, Adams, Drake, Bates, Cox
+        if solution['Edwards'] == 1 and solution['Adams'] == 2 and solution['Drake'] == 3 and solution['Bates'] == 4 and solution['Cox'] == 5:
             return True
     return False
 #print(answer_d())
-print(str(answer_d()) + ' - Answer D: Kevin, Ginny, Juanita, Fernando, Hakim.')
+print(str(answer_d()) + ' - Answer D: Edwards, Adams, Drake, Bates, Cox.')
 
-# The Python function answer_e() is designed to iterate over a collection called solutions. If the function iterates over the entire solutions collection and does not find any item where the order is Kevin, Juanita, Fernando, Hakim, Ginny, it will return False.
+
+# The Python function answer_e() is designed to iterate over a collection called solutions. If the function iterates over the entire solutions collection and does not find any item where the order is Drake, Edwards, Bates, Adams, Cox, it will return False.
 def answer_e():
     for solution in solutions:
-        # Kevin, Juanita, Fernando, Hakim, Ginny
-        if solution['Kevin'] == 1 and solution['Juanita'] == 2 and solution['Fernando'] == 3 and solution['Hakim'] == 4 and solution['Ginny'] == 5:
+        # Drake, Edwards, Bates, Adams, Cox
+        if solution['Drake'] == 1 and solution['Edwards'] == 2 and solution['Bates'] == 3 and solution['Adams'] == 4 and solution['Cox'] == 5:
             return True
     return False
 #print(answer_e())
-print(str(answer_e()) + ' - Answer E: Kevin, Juanita, Fernando, Hakim, Ginny.')
+print(str(answer_e()) + ' - Answer E: Drake, Edwards, Bates, Adams, Cox.')
