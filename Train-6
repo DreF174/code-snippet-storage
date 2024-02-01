@@ -1,0 +1,128 @@
+from constraint import Problem
+
+# Step 1. Create a new `Problem` instance. This will be the object where you define your variables and constraints.
+problem = Problem()
+
+# Step 2. Identify the LSAT game type and explain why.
+# This game type is an assignment game because the participants are students being assigned days and times to give oral reports given certain rules and constraints.
+
+# Step 3. Identify and define the variables of the problem. Since the question rule excludes Kyle and Lenore, we will not include them in the variables.
+# Define the variables. 
+# The variables are the students.
+# The question rule excludes Kyle and Lenore, so we will not include them in the variables.
+students = ['George', 'Helen', 'Irving', 'Nina', 'Olivia', 'Robert']
+# Define the domains. 
+# Their domains are the days and times they can give oral reports.
+days_and_times = ['Monday morning', 'Monday afternoon', 'Tuesday morning', 'Tuesday afternoon', 'Wednesday morning', 'Wednesday afternoon']
+
+#Step 4. # Identify any domains that require ordering and create a dictionary mapping numbers to the objects in the domain.
+# In this case, the days and times need to be ordered, so we will create a dictionary mapping numbers to the days and times.
+# Create a dictionary mapping the days and times to numbers
+days_and_times = {1: 'Monday morning', 2: 'Monday afternoon', 3: 'Tuesday morning', 4: 'Tuesday afternoon', 5: 'Wednesday morning', 6: 'Wednesday afternoon'}
+
+# Step 5. Add variables and domains to the problem
+for student in students:
+    problem.addVariable(student, days_and_times)
+
+# Step 6. Add the orignal constraints. Each rule translates to a constraint in your problem.
+
+#Rule 1: Exactly six students will give individual oral reports during three consecutive days—Monday, Tuesday, and Wednesday.
+#Because the number of students is equal to the number of report times, and none of the answer constraints creates a disparity between the number of students and the number of report times, we can use the AllDifferentConstraint() to ensure that each student gives an oral report during three consecutive days.
+problem.addConstraint(AllDifferentConstraint (), students)
+
+#Rule 2: Exactly two reports will be given each day—one in the morning and one in the afternoon.
+#This rule is already satisfied by the allDifferentConstraint() we used above.
+
+#Rule 3: Tuesday is the only day on which George can give a report.
+# Tuesday morning and Tuesday afternoon are the only positions where George can give a report.
+problem.addConstraint(lambda g: g == 3 or g == 4, ('George',))
+
+#Rule 4: Neither Olivia nor Robert can give an afternoon report.
+# Olivia nor Robert must give a report on Monday afternoon or Tuesday afteroon or Wensday afternoon
+problem.addConstraint(lambda o: o != 2 and o != 4 and o != 6, ('Olivia',))
+problem.addConstraint(lambda r: r != 2 and r != 4 and r != 6, ('Robert',))
+
+#Rule 5: If Nina gives a report, then on the next day Helen and Irving must both give reports, unless Nina's report is given on Wednesday.
+# Nina gives a report on Monday or Tuesday.
+def nina_constraint(nina, helen, irving):
+    # If Nina gives a report on Monday morning or Monday afternoon
+    if nina in [1, 2]:
+        # Then Helen and Irving must both give reports the next day, on Tuesday morning or Tuesday afternoon.
+        if helen not in [3,4] or irving not in [3,4]:
+            return False
+    # If Nina gives a report on Tuesday morning or Tuesday afternoon
+    if nina in [3, 4]:
+        # Helen and Irving must both give reports the next day, on Wednesday morning or Wednesday afternoon.
+        if helen not in [5,6] and irving not in [5,6]:
+            return False
+    return True
+# Add the constraint to the problem
+problem.addConstraint(nina_constraint, ('Nina', 'Helen', 'Irving'))
+
+
+# Question Rule: If Kyle and Lenore do not give reports.
+# This rule was already satisfied by excluding Kyle and Lenore from the variables
+
+# Step 7. Determine all possible solutions that exist after applying the original rules stated above. These rules and constraints will be assumed and imposed on the answer choices below
+solutions = problem.getSolutions()
+#print(solutions)
+#print("The possible solutions are: " + str(solutions))
+#count the number of solutions
+print("problem_200010_3-G_1_2_D The number of possible solutions is: " + str(len(solutions)))
+
+# Step 8: Determine if each answer choice is possible by adding the question constraint to the answer choice constraint and seeing if the answer choice is satisfied by the possible solutions.
+
+# Answer A. If Kyle and Lenore do not give reports, then the morning reports on Monday, Tuesday, and Wednesday, respectively, could be given by Helen, George, and Nina?.
+#The function for Answer A is designed to incorporate the question rule and iterate over a collection called solutions. 
+#Since Kyle and Leonor have been excluded, we simply check if it is possible for Helen, George, and Nina to give reports on Monday morning, Tuesday morning, and Wednesday morning, respectively.
+def answer_a():
+    for solution in solutions:
+        if solution['Helen'] == 1 and solution['George'] == 3 and solution['Nina'] == 5:
+             return True
+    return False
+#print(answer_a())
+print(str(answer_a()) + ' - Answer A: Helen, George, and Nina.')
+
+# Answer B. If Kyle and Lenore do not give reports, then the morning reports on Monday, Tuesday, and Wednesday, respectively, could be given by Irving, Robert, and Helen?.
+#The function for Answer B is designed to incorporate the question rule and iterate over a collection called solutions.
+#Since Kyle and Leonor have been excluded, we simply check if it is possible for Irving, Robert, and Helen to give reports on Monday morning, Tuesday morning, and Wednesday morning, respectively.
+def answer_b():
+    for solution in solutions:
+        if solution['Irving'] == 1 and solution['Robert'] == 3 and solution['Helen'] == 5:
+            return True
+    return False
+#print(answer_b())
+print(str(answer_b()) + ' - Answer B: Irving, Robert, and Helen.')
+
+# Answer C. If Kyle and Lenore do not give reports, then the morning reports on Monday, Tuesday, and Wednesday, respectively, could be given by Nina, Helen, and Olivia?.
+#The function for Answer C is designed to incorporate the question rule and iterate over a collection called solutions.
+#Since Kyle and Leonor have been excluded, we simply check if it is possible for Nina, Helen, and Olivia to give reports on Monday morning, Tuesday morning, and Wednesday morning, respectively.
+def answer_c():
+    for solution in solutions:
+        if solution['Nina'] == 1 and solution['Helen'] == 3 and solution['Olivia'] == 5:
+            return True
+    return False
+#print(answer_c())
+print(str(answer_c()) + ' - Answer C: Nina, Helen, and Olivia.')
+
+# Answer D. If Kyle and Lenore do not give reports, then the morning reports on Monday, Tuesday, and Wednesday, respectively, could be given by Olivia, Robert, and Irving?.
+#The function for Answer D is designed to incorporate the question rule and iterate over a collection called solutions.
+#Since Kyle and Leonor have been excluded, we simply check if it is possible for Olivia, Robert, and Irving to give reports on Monday morning, Tuesday morning, and Wednesday morning, respectively.
+def answer_d():
+    for solution in solutions:
+        if solution['Olivia'] == 1 and solution['Robert'] == 3 and solution['Irving'] == 5:
+            return True
+    return False
+#print(answer_d())
+print(str(answer_d()) + ' - Answer D: Olivia, Robert, and Irving.')
+
+# Answer E. If Kyle and Lenore do not give reports, then the morning reports on Monday, Tuesday, and Wednesday, respectively, could be given by Robert, George, and Helen?.
+#The function for Answer E is designed to incorporate the question rule and iterate over a collection called solutions.
+#Since Kyle and Leonor have been excluded, we simply check if it is possible for Robert, George, and Helen to give reports on Monday morning, Tuesday morning, and Wednesday morning, respectively.
+def answer_e():
+    for solution in solutions:
+        if solution['Robert'] == 1 and solution['George'] == 3 and solution['Helen'] == 5:
+            return True
+    return False
+#print(answer_e())
+print(str(answer_e()) + ' - Answer E: Robert, George, and Helen.')
