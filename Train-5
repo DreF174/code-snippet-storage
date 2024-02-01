@@ -1,0 +1,118 @@
+from constraint import Problem
+
+# Step 1. Create a new `Problem` instance. This will be the object where you define your variables and constraints.
+problem = Problem()
+
+# Step 2. Identify the LSAT game type and explain why.
+# This game type is an assignment game because the participants are students being assigned days and times to give oral reports given certain rules and constraints.
+
+# Step 3. Identify and define the variables of the problem. In this case, the variables are the students, and their domains are the days and times they can give oral reports.
+# Define the variables
+students = ['George', 'Helen', 'Irving', 'Kyle', 'Lenore', 'Nina', 'Olivia', 'Robert']
+# Define the domains
+days_and_times = ['Monday morning', 'Monday afternoon', 'Tuesday morning', 'Tuesday afternoon', 'Wednesday morning', 'Wednesday afternoon']
+
+#Step 4. # Identify any domains that require ordering and create a dictionary mapping numbers to the objects in the domain.
+# In this case, the days and times need to be ordered, so we will create a dictionary mapping numbers to the days and times.
+# Create a dictionary mapping the days and times to numbers
+days_and_times = {1: 'Monday morning', 2: 'Monday afternoon', 3: 'Tuesday morning', 4: 'Tuesday afternoon', 5: 'Wednesday morning', 6: 'Wednesday afternoon'}
+
+# Step 5. Add variables and domains to the problem
+for student in students:
+    problem.addVariable(student, days_and_times)
+
+# Step 6. Add the orignal constraints. Each rule translates to a constraint in your problem.
+
+#Rule 1: Exactly six students will give individual oral reports during three consecutive days—Monday, Tuesday, and Wednesday.
+#This rule is already satisfied by the domains we defined above.
+
+#Rule 2: Exactly two reports will be given each day—one in the morning and one in the afternoon.
+#This rule is already satisfied by the domains we defined above.
+
+
+#Rule 3: Tuesday is the only day on which George can give a report.
+problem.addConstraint(lambda g: g == 3 or g == 4, ('George',))
+
+
+#Rule 4: Neither Olivia nor Robert can give an afternoon report.
+# Olivia nor Robert can give an afternoon report on Monday or Tuesday or Wednesday.
+problem.addConstraint(lambda o: o != 2 and o != 4 and o != 6, ('Olivia',))
+problem.addConstraint(lambda r: r != 2 and r != 4 and r != 6, ('Robert',))
+
+
+#Rule 5: If Nina gives a report, then on the next day Helen and Irving must both give reports, unless Nina's report is given on Wednesday.
+# Nina gives a report on Monday or Tuesday.
+def nina_constraint(nina, helen, irving):
+    # If Nina gives a report on Monday morning or Monday afternoon
+    if nina in [1, 2]:
+        # Then Helen and Irving must both give reports the next day, on Tuesday morning or Tuesday afternoon.
+        if helen not in [3,4] or irving not in [3,4]:
+            return False
+    # If Nina gives a report on Tuesday morning or Tuesday afternoon
+    if nina in [3, 4]:
+        # Helen and Irving must both give reports the next day, on Wednesday morning or Wednesday afternoon.
+        if helen not in [5,6] and irving not in [5,6]:
+            return False
+    return True
+# Add the constraint to the problem
+problem.addConstraint(nina_constraint, ('Nina', 'Helen', 'Irving'))
+
+
+# Step 7. Determine all possible solutions that exist after applying the original rules stated above. These rules and constraints will be assumed and imposed on the answer choices below
+solutions = problem.getSolutions()
+#print(solutions)
+#print("The possible solutions are: " + str(solutions))
+#count the number of solutions
+print("problem_200010_3-G_1_1_C The number of possible solutions is: " + str(len(solutions)))
+
+# Step 8: Determine if each answer choice is possible by adding the question constraint to the answer choice constraint and seeing if the answer choice is satisfied by the possible solutions.
+
+# The Python function answer_a() is designed to iterate over a collection called solutions. If the function iterates over the entire solutions collection and does not find any item where the schedule is Mon. morning: Helen; Mon. afternoon: Robert Tues. morning: Olivia; Tues. afternoon: Irving Wed. morning: Lenore; Wed. afternoon: Kyle, it will return False.
+def answer_a():
+    for solution in solutions:
+        # Mon. morning: Helen; Mon. afternoon: Robert Tues. morning: Olivia; Tues. afternoon: Irving Wed. morning: Lenore; Wed. afternoon: Kyle
+        if solution['Helen'] == 1 and solution['Robert'] == 2 and solution['Olivia'] == 3 and solution['Irving'] == 4 and solution['Lenore'] == 5 and solution['Kyle'] == 6:
+            return True
+    return False
+#print(answer_a())
+print(str(answer_a()) + ' - Answer A: Mon. morning: Helen; Mon. afternoon: Robert Tues. morning: Olivia; Tues. afternoon: Irving Wed. morning: Lenore; Wed. afternoon: Kyle.')
+
+# The Python function answer_b() is designed to iterate over a collection called solutions. If the function iterates over the entire solutions collection and does not find any item where the schedule is Mon. morning: Irving; Mon. afternoon: Olivia Tues. morning: Helen; Tues. afternoon: Kyle Wed. morning: Nina; Wed. afternoon: Lenore, it will return False.
+def answer_b():
+    for solution in solutions:
+        # Mon. morning: Irving; Mon. afternoon: Olivia Tues. morning: Helen; Tues. afternoon: Kyle Wed. morning: Nina; Wed. afternoon: Lenore
+        if solution['Irving'] == 1 and solution['Olivia'] == 2 and solution['Helen'] == 3 and solution['Kyle'] == 4 and solution['Nina'] == 5 and solution['Lenore'] == 6:
+            return True
+    return False
+#print(answer_b())
+print(str(answer_b()) + ' - Answer B: Mon. morning: Irving; Mon. afternoon: Olivia Tues. morning: Helen; Tues. afternoon: Kyle Wed. morning: Nina; Wed. afternoon: Lenore.')
+
+# The Python function answer_c() is designed to iterate over a collection called solutions. If the function iterates over the entire solutions collection and does not find any item where the schedule is Mon. morning: Lenore; Mon. afternoon: Helen Tues. morning: George; Tues. afternoon: Kyle Wed. morning: Robert; Wed. afternoon: Irving, it will return False.
+def answer_c():
+    for solution in solutions:
+        # Mon. morning: Lenore; Mon. afternoon: Helen Tues. morning: George; Tues. afternoon: Kyle Wed. morning: Robert; Wed. afternoon: Irving
+        if solution['Lenore'] == 1 and solution['Helen'] == 2 and solution['George'] == 3 and solution['Kyle'] == 4 and solution['Robert'] == 5 and solution['Irving'] == 6:
+            return True
+    return False
+#print(answer_c())
+print(str(answer_c()) + ' - Answer C: Mon. morning: Lenore; Mon. afternoon: Helen Tues. morning: George; Tues. afternoon: Kyle Wed. morning: Robert; Wed. afternoon: Irving.')
+
+# The Python function answer_d() is designed to iterate over a collection called solutions. If the function iterates over the entire solutions collection and does not find any item where the schedule is Mon. morning: Nina; Mon. afternoon: Helen Tues. morning: Robert; Tues. afternoon: Irving Wed. morning: Olivia; Wed. afternoon: Lenore, it will return False.
+def answer_d():
+    for solution in solutions:
+        # Mon. morning: Nina; Mon. afternoon: Helen Tues. morning: Robert; Tues. afternoon: Irving Wed. morning: Olivia; Wed. afternoon: Lenore
+        if solution['Nina'] == 1 and solution['Helen'] == 2 and solution['Robert'] == 3 and solution['Irving'] == 4 and solution['Olivia'] == 5 and solution['Lenore'] == 6:
+            return True
+    return False
+#print(answer_d())
+print(str(answer_d()) + ' - Answer D: Mon. morning: Nina; Mon. afternoon: Helen Tues. morning: Robert; Tues. afternoon: Irving Wed. morning: Olivia; Wed. afternoon: Lenore.')
+
+# The Python function answer_e() is designed to iterate over a collection called solutions. If the function iterates over the entire solutions collection and does not find any item where the schedule is Mon. morning: Olivia; Mon. afternoon: Nina Tues. morning: Irving; Tues. afternoon: Helen Wed. morning: Kyle; Wed. afternoon: George, it will return False.
+def answer_e():
+    for solution in solutions:
+        # Mon. morning: Olivia; Mon. afternoon: Nina Tues. morning: Irving; Tues. afternoon: Helen Wed. morning: Kyle; Wed. afternoon: George
+        if solution['Olivia'] == 1 and solution['Nina'] == 2 and solution['Irving'] == 3 and solution['Helen'] == 4 and solution['Kyle'] == 5 and solution['George'] == 6:
+            return True
+    return False
+#print(answer_e())
+print(str(answer_e()) + ' - Answer E: Mon. morning: Olivia; Mon. afternoon: Nina Tues. morning: Irving; Tues. afternoon: Helen Wed. morning: Kyle; Wed. afternoon: George.')
