@@ -1,12 +1,12 @@
 from constraint import Problem
 
-# Step 3. Create a new `Problem` instance. This will be the object where you define your variables and constraints.
+# Step 1. Create a new `Problem` instance. This will be the object where you define your variables and constraints.
 problem = Problem()
 
-# Step 4. Identify the LSAT game type and explain why. 
+# Step 2. Identify the LSAT game type and explain why. 
 # This game type is an grouping game because the participants are works being put into one of two groups: those that are selected and those that are NOT selected.
 
-# Step 5. Identify and define the variables of the problem.
+# Step 3. Identify and define the variables of the problem.
 # Define the variables
 # In this case, the variables are the works.
 works = ['FrenchNovel_1', 'FrenchNovel_2', 'FrenchNovel_3', 'RussianNovel_1', 'RussianNovel_2', 'RussianNovel_3', 'FrenchPlay_1', 'FrenchPlay_2', 'RussianPlay_1']
@@ -14,14 +14,14 @@ works = ['FrenchNovel_1', 'FrenchNovel_2', 'FrenchNovel_3', 'RussianNovel_1', 'R
 # Tn this case, the domains are the groups: selected and not_selected
 groups= ["selected", "not_selected"]
 
-#Step 6. # Identify any domains that require ordering and create a dictionary mapping numbers to the objects in the domain.
+#Step 4. # Identify any domains that require ordering and create a dictionary mapping numbers to the objects in the domain.
 # In this case the selection of works does not have to be ordered. 
 
-# Step 7. Add variables and domains to the problem
+# Step 5. Add variables and domains to the problem
 for work in works:
     problem.addVariable(work, groups)
     
-# Step 8. Add the orignal constraints. Each rule translates to a constraint in your problem.
+# Step 6. Add the orignal constraints. Each rule translates to a constraint in your problem.
 
 #Rule 1: The organizer will select at least five and at most six works from a group of nine works.
 # This rule can be restated as: The organizer will select exactly five or exactly six works from a group of nine works.
@@ -97,14 +97,14 @@ def rule_6_constraint(french_play_1, french_play_2, russian_play_1):
 # Add the constraint to the problem
 problem.addConstraint(rule_6_constraint, ('FrenchPlay_1', 'FrenchPlay_2', 'RussianPlay_1'))
 
-# Step 9. Determine all possible solutions that exist after applying the original rules stated above. These rules and constraints will be assumed and imposed on the answer choices below
+# Step 7. Determine all possible solutions that exist after applying the original rules stated above. These rules and constraints will be assumed and imposed on the answer choices below
 solutions = problem.getSolutions()
 #print(solutions)
 #print("The possible solutions are: " + str(solutions))
 #count the number of solutions
 print("problem_200010_3-G_2_8_A - the number of possible solutions is: " + str(len(solutions)))
 
-# Step 10: Determine if each answer choice is possible by adding the question constraint to the answer choice constraint and seeing if the answer choice is satisfied by the possible solutions.
+# Step 8: Determine if each answer choice is possible by adding the question constraint to the answer choice constraint and seeing if the answer choice is satisfied by the possible solutions.
 
 # Answer A. No Russian novels are selected.
 #The function for Answer A is designed to incorporate the question rule and iterate over a collection called solutions. The function assumes that no Russian novels are selected and checks to see if it is possible for no Russian novels to be selected. If the function iterates over the entire solutions collection and finds any order where no Russian novels are selected, it will return True.
