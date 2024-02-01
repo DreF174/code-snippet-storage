@@ -1,0 +1,180 @@
+from constraint import Problem
+
+# Step 1. Create a new `Problem` instance. This will be the object where you define your variables and constraints.
+problem = Problem()
+
+# Step 2. Identify the LSAT game type and explain why.
+# This game type is an grouping game because the participants are works being put into one of two groups: those that are selected and those that are NOT selected.
+
+# Step 3. Identify and define the variables of the problem. 
+# Define the variables
+# In this case, the variables are the works.
+works = ['FrenchNovel_1', 'FrenchNovel_2', 'FrenchNovel_3', 'RussianNovel_1', 'RussianNovel_2', 'RussianNovel_3', 'FrenchPlay_1', 'FrenchPlay_2', 'RussianPlay_1']
+# Define the domains
+# Tn this case, the domains are the groups: selected and not_selected
+groups= ["selected", "not_selected"]
+
+#Step 4. # Identify any domains that require ordering and create a dictionary mapping numbers to the objects in the domain.
+# In this case the selection of works is already ordered, so we will not create a dictionary mapping numbers to the selection of works.
+
+# Step 5. Add variables and domains to the problem
+for work in works:
+    problem.addVariable(work, groups)
+    
+# Step 6. Add the orignal constraints. Each rule translates to a constraint in your problem.
+
+#Rule 1: The organizer will select at least five and at most six works from a group of nine works.
+# This rule can be restated as: The organizer will select exactly five or exactly six works from a group of nine works.
+# Add a constraint that counts the number of works selected and ensures that the number is five or six.
+
+def rule_1_constraint(french_novel_1, french_novel_2, french_novel_3, russian_novel_1, russian_novel_2, russian_novel_3, french_play_1, french_play_2, russian_play_1):
+    # Convert the works to 1 if 'selected' and 0 otherwise
+    works = [french_novel_1, french_novel_2, french_novel_3, russian_novel_1, russian_novel_2, russian_novel_3, french_play_1, french_play_2, russian_play_1]
+    selected_works = [1 if work == 'selected' else 0 for work in works]
+    # Count the number of works selected
+    total_selected = sum(selected_works)
+    # Ensure that the number of works selected is five or six
+    return 5 <= total_selected <= 6
+# Add the constraint to the problem
+problem.addConstraint(rule_1_constraint, ('FrenchNovel_1', 'FrenchNovel_2', 'FrenchNovel_3', 'RussianNovel_1', 'RussianNovel_2', 'RussianNovel_3', 'FrenchPlay_1', 'FrenchPlay_2', 'RussianPlay_1'))
+
+#Rule 2: The group consists of three French novels, three Russian novels, two French plays, and one Russian play.
+# This rule is already satisfied by the domains we defined above.
+
+#Rule 3: No more than four French works are selected.
+# This rule can be restated as: No more than four French novels and no more than two French plays are selected.
+# Add a constraint that counts the number of French works selected and ensures that the number is no more than four.
+def rule_3_constraint(french_novel_1, french_novel_2, french_novel_3, french_play_1, french_play_2):
+    # Convert the French works to 1 if 'selected' and 0 otherwise
+    french_works = [french_novel_1, french_novel_2, french_novel_3, french_play_1, french_play_2]
+    selected_french_works = [1 if work == 'selected' else 0 for work in french_works]
+    # Count the number of French works selected
+    total_selected = sum(selected_french_works)
+    # Ensure that the number of French works selected is no more than four
+    return total_selected <= 4
+# Add the constraint to the problem
+problem.addConstraint(rule_3_constraint, ('FrenchNovel_1', 'FrenchNovel_2', 'FrenchNovel_3', 'FrenchPlay_1', 'FrenchPlay_2'))
+
+#Rule 4: At least three but no more than four novels are selected.
+# Add a constraint that counts the number of novels selected and ensures that the number is at least three and no more than four.
+def rule_4_constraint(french_novel_1, french_novel_2, french_novel_3, russian_novel_1, russian_novel_2, russian_novel_3):
+    # Convert the novels to 1 if 'selected' and 0 otherwise
+    novels = [french_novel_1, french_novel_2, french_novel_3, russian_novel_1, russian_novel_2, russian_novel_3]
+    selected_novels = [1 if work == 'selected' else 0 for work in novels]
+    # Count the number of novels selected
+    total_selected = sum(selected_novels)
+    # Ensure that the number of novels selected is at least three and no more than four
+    return 3 <= total_selected <= 4
+# Add the constraint to the problem
+problem.addConstraint(rule_4_constraint, ('FrenchNovel_1', 'FrenchNovel_2', 'FrenchNovel_3', 'RussianNovel_1', 'RussianNovel_2', 'RussianNovel_3'))
+
+#Rule 5: At least as many French novels as Russian novels are selected.
+# Add a constraint that counts the number of French novels and Russian novels selected and ensures that the number of French novels selected is at least as many as the number of Russian novels selected.
+def rule_5_constraint(french_novel_1, french_novel_2, french_novel_3, russian_novel_1, russian_novel_2, russian_novel_3):
+    # Convert the French novels to 1 if 'selected' and 0 otherwise
+    french_novels = [french_novel_1, french_novel_2, french_novel_3]
+    selected_french_novels = [1 if work == 'selected' else 0 for work in french_novels]
+    # Count the number of French novels selected
+    total_french_selected = sum(selected_french_novels)
+    # Convert the Russian novels to 1 if 'selected' and 0 otherwise
+    russian_novels = [russian_novel_1, russian_novel_2, russian_novel_3]
+    selected_russian_novels = [1 if work == 'selected' else 0 for work in russian_novels]
+    # Count the number of Russian novels selected
+    total_russian_selected = sum(selected_russian_novels)
+    # Ensure that the number of French novels selected is at least as many as the number of Russian novels selected
+    return total_french_selected >= total_russian_selected
+# Add the constraint to the problem
+problem.addConstraint(rule_5_constraint, ('FrenchNovel_1', 'FrenchNovel_2', 'FrenchNovel_3', 'RussianNovel_1', 'RussianNovel_2', 'RussianNovel_3'))
+
+# Rule 6: If both French plays are selected, then the Russian play is not selected.
+# Add a constraint that ensures that if both French plays are selected, then the Russian play is not selected.
+def rule_6_constraint(french_play_1, french_play_2, russian_play_1):
+    # If both French plays are selected
+    if french_play_1 == 'selected' and french_play_2 == 'selected':
+        # Then the Russian play is not selected
+        if russian_play_1 == 'selected':
+            return False
+    return True
+# Add the constraint to the problem
+problem.addConstraint(rule_6_constraint, ('FrenchPlay_1', 'FrenchPlay_2', 'RussianPlay_1'))
+    
+# Step 7. Determine all possible solutions that exist after applying the original rules stated above. These rules and constraints will be assumed and imposed on the answer choices below
+solutions = problem.getSolutions()  
+#print(solutions)
+#print("The possible solutions are: " + str(solutions))
+#count the number of solutions
+print("problem_200010_3-G_2_7_C - the number of possible solutions is: " + str(len(solutions)))
+
+# Step 8: Determine if each answer choice is possible by adding the question constraint to the answer choice constraint and seeing if the answer choice is satisfied by the possible solutions.
+
+# Answer A. one French novel, two Russian novels, one French play, one Russian play.
+#The function for Answer A is designed to incorporate the question rule and iterate over a collection called solutions. The function assumes that one French novel, two Russian novels, one French play, and one Russian play are selected and checks to see if it is possible for them to be selected. If the function iterates over the entire solutions collection and finds any order where one French novel, two Russian novels, one French play, and one Russian play are selected, it will return True.
+def answer_a():
+    for solution in solutions:
+        french_novels = sum(1 for work, selected in solution.items() if 'FrenchNovel' in work and selected == 'selected')
+        russian_novels = sum(1 for work, selected in solution.items() if 'RussianNovel' in work and selected == 'selected')
+        french_plays = sum(1 for work, selected in solution.items() if 'FrenchPlay' in work and selected == 'selected')
+        russian_plays = sum(1 for work, selected in solution.items() if 'RussianPlay' in work and selected == 'selected')
+
+        if french_novels == 1 and russian_novels == 2 and french_plays == 1 and russian_plays == 1:
+            return True
+    return False
+#print(answer_a())
+print(str(answer_a()) + ' - Answer A: one French novel, two Russian novels, one French play, one Russian play.')
+
+# Answer B. two French novels, one Russian novel, two French plays, one Russian play.
+#The function for Answer B is designed to incorporate the question rule and iterate over a collection called solutions. The function assumes that two French novels, one Russian novel, two French plays, and one Russian play are selected and checks to see if it is possible for them to be selected. If the function iterates over the entire solutions collection and finds any order where two French novels, one Russian novel, two French plays, and one Russian play are selected, it will return True.
+def answer_b():
+    for solution in solutions:
+        french_novels = sum(1 for work, selected in solution.items() if 'FrenchNovel' in work and selected == 'selected')
+        russian_novels = sum(1 for work, selected in solution.items() if 'RussianNovel' in work and selected == 'selected')
+        french_plays = sum(1 for work, selected in solution.items() if 'FrenchPlay' in work and selected == 'selected')
+        russian_plays = sum(1 for work, selected in solution.items() if 'RussianPlay' in work and selected == 'selected')
+
+        if french_novels == 2 and russian_novels == 1 and french_plays == 2 and russian_plays == 1:
+            return True
+    return False
+#print(answer_b())
+print(str(answer_b()) + ' - Answer B: two French novels, one Russian novel, two French plays, one Russian play.')
+
+# Answer C. Two French novels, two Russian novels, two French plays.
+#The function for Answer C is designed to incorporate the question rule and iterate over a collection called solutions. The function assumes that two French novels, two Russian novels, and two French plays are selected and checks to see if it is possible for them to be selected. If the function iterates over the entire solutions collection and finds any order where two French novels, two Russian novels, and two French plays are selected, it will return True.
+def answer_c():
+    for solution in solutions:
+        french_novels = sum(1 for work, selected in solution.items() if 'FrenchNovel' in work and selected == 'selected')
+        russian_novels = sum(1 for work, selected in solution.items() if 'RussianNovel' in work and selected == 'selected')
+        french_plays = sum(1 for work, selected in solution.items() if 'FrenchPlay' in work and selected == 'selected')
+
+        if french_novels == 2 and russian_novels == 2 and french_plays == 2:
+            return True
+    return False
+#print(answer_c())
+print(str(answer_c()) + ' - Answer C: Two French novels, two Russian novels, two French plays.')
+
+# Answer D. three French novels, one Russian novel, two French plays.
+#The function for Answer D is designed to incorporate the question rule and iterate over a collection called solutions. The function assumes that three French novels, one Russian novel, and two French plays are selected and checks to see if it is possible for them to be selected. If the function iterates over the entire solutions collection and finds any order where three French novels, one Russian novel, and two French plays are selected, it will return True.
+def answer_d():
+    for solution in solutions:
+        french_novels = sum(1 for work, selected in solution.items() if 'FrenchNovel' in work and selected == 'selected')
+        russian_novels = sum(1 for work, selected in solution.items() if 'RussianNovel' in work and selected == 'selected')
+        french_plays = sum(1 for work, selected in solution.items() if 'FrenchPlay' in work and selected == 'selected')
+
+        if french_novels == 3 and russian_novels == 1 and french_plays == 2:
+            return True
+    return False
+#print(answer_d())
+print(str(answer_d()) + ' - Answer D: three French novels, one Russian novel, two French plays.')
+
+# Answer E. Three French novels, two Russian novels, one Russian play.
+#The function for Answer E is designed to incorporate the question rule and iterate over a collection called solutions. The function assumes that three French novels, two Russian novels, and one Russian play are selected and checks to see if it is possible for them to be selected. If the function iterates over the entire solutions collection and finds any order where three French novels, two Russian novels, and one Russian play are selected, it will return True.
+def answer_e():
+    for solution in solutions:
+        french_novels = sum(1 for work, selected in solution.items() if 'FrenchNovel' in work and selected == 'selected')
+        russian_novels = sum(1 for work, selected in solution.items() if 'RussianNovel' in work and selected == 'selected')
+        russian_plays = sum(1 for work, selected in solution.items() if 'RussianPlay' in work and selected == 'selected')
+
+        if french_novels == 3 and russian_novels == 2 and russian_plays == 1:
+            return True
+    return False
+#print(answer_e())
+print(str(answer_e()) + ' - Answer E: Three French novels, two Russian novels, one Russian play.')
