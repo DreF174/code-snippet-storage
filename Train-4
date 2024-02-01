@@ -1,0 +1,104 @@
+from constraint import Problem
+
+# Step 1. Create a new `Problem` instance. This will be the object where you define your variables and constraints.
+problem = Problem()
+
+# Step 2. Identify the LSAT game type and explain why.
+# This game type is an assignment game because the participants are cashiers being assigned days of the week to work given certain rules and constraints.
+
+# Step 3. Identify and define the variables of the problem.
+# Define the variables
+# The variables are the cashiers
+cashiers = ['Adams', 'Bates', 'Cox', 'Drake', 'Edwards']
+# Define the domains
+# The domains are the work days of the week.
+work_days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday']
+
+#Step 4. # Identify any domains that require ordering and create a dictionary mapping numbers to the objects in the domain.
+# In this case, the work days need to be ordered, so we will create a dictionary mapping numbers to the work days.
+# Create a dictionary mapping the days of the week to numbers
+work_days = {1: 'Monday', 2: 'Tuesday', 3: 'Wednesday', 4: 'Thursday', 5: 'Friday'}
+
+# Step 5. Add variables and domains to the problem
+for cashier in cashiers:
+    problem.addVariable(cashier, work_days)
+    
+# Step 6. Add the orignal constraints. Each rule translates to a constraint in your problem.
+
+#Rule 1: Each cashier works alone on exactly one day, Monday through Friday. 
+#Because the number of cashiers is equal to the number of days of the week, and none of the answer constraints creates a disparity between the number of cashiers and the number of days of the week, we can use the AllDifferentConstraint() to ensure that each cashier works alone on exactly one day.
+problem.addConstraint(AllDifferentConstraint(), cashiers)
+
+#Rule 2: Adams will work only on Tuesday or Thursday.
+problem.addConstraint(lambda a: a == 2 or a == 4, ('Adams',))
+
+#Rule 3: Bates will not work on Monday or Wednesday.
+problem.addConstraint(lambda b: b != 1 and b != 3, ('Bates',))
+
+#Rule 4: Cox works on Friday.
+problem.addConstraint(lambda c: c == 5, ('Cox',))
+
+# Rule 5: Edwards cannot work next to Drake.
+problem.addConstraint(lambda e, d: e != d + 1 and e != d - 1, ('Edwards', 'Drake'))
+
+# Step 7. Determine all possible solutions that exist after applying the original rules stated above. These rules and constraints will be assumed and imposed on the answer choices below
+solutions = problem.getSolutions()
+#print(solutions)
+#print("The possible solutions are: " + str(solutions))
+#count the number of solutions
+print("problem_cashiers_1_D The number of possible solutions is: " + str(len(solutions)))
+
+# Step 8: Determine if each answer choice is possible by adding the question constraint to the answer choice constraint and seeing if the answer choice is satisfied by the possible solutions.
+
+# The Python function answer_a() is designed to iterate over a collection called solutions. If the function iterates over the entire solutions collection and does not find any item where the order is Edwards, Bates, Adams, Drake, Cox, it will return False.
+#
+def answer_a():
+    for solution in solutions:
+        # Edwards, Bates, Adams, Drake, Cox
+        if solution['Edwards'] == 1 and solution['Bates'] == 2 and solution['Adams'] == 3 and solution['Drake'] == 4 and solution['Cox'] == 5:
+            return True
+    return False
+#print(answer_a())
+print(str(answer_a()) + ' - Answer A: Edwards, Bates, Adams, Drake, Cox.')
+  
+
+# The Python function answer_b() is designed to iterate over a collection called solutions. If the function iterates over the entire solutions collection and does not find any item where the order is Drake, Adams, Bates, Edwards, Cox, it will return False.
+def answer_b():
+    for solution in solutions:
+        # Drake, Adams, Bates, Edwards, Cox
+        if solution['Drake'] == 1 and solution['Adams'] == 2 and solution['Bates'] == 3 and solution['Edwards'] == 4 and solution['Cox'] == 5:
+            return True
+    return False
+#print(answer_b())
+print(str(answer_b()) + ' - Answer B: Drake, Adams, Bates, Edwards, Cox.')
+
+# The Python function answer_c() is designed to iterate over a collection called solutions. If the function iterates over the entire solutions collection and does not find any item where the order is Edwards, Adams, Cox, Bates, Drake, it will return False.
+def answer_c():
+    for solution in solutions:
+        # Edwards, Adams, Cox, Bates, Drake
+        if solution['Edwards'] == 1 and solution['Adams'] == 2 and solution['Cox'] == 3 and solution['Bates'] == 4 and solution['Drake'] == 5:
+            return True
+    return False
+#print(answer_c())
+print(str(answer_c()) + ' - Answer C: Edwards, Adams, Cox, Bates, Drake.')
+
+# The Python function answer_d() is designed to iterate over a collection called solutions. If the function iterates over the entire solutions collection and does not find any item where the order is Edwards, Adams, Drake, Bates, Cox, it will return False.
+def answer_d():
+    for solution in solutions:
+        # Edwards, Adams, Drake, Bates, Cox
+        if solution['Edwards'] == 1 and solution['Adams'] == 2 and solution['Drake'] == 3 and solution['Bates'] == 4 and solution['Cox'] == 5:
+            return True
+    return False
+#print(answer_d())
+print(str(answer_d()) + ' - Answer D: Edwards, Adams, Drake, Bates, Cox.')
+
+
+# The Python function answer_e() is designed to iterate over a collection called solutions. If the function iterates over the entire solutions collection and does not find any item where the order is Drake, Edwards, Bates, Adams, Cox, it will return False.
+def answer_e():
+    for solution in solutions:
+        # Drake, Edwards, Bates, Adams, Cox
+        if solution['Drake'] == 1 and solution['Edwards'] == 2 and solution['Bates'] == 3 and solution['Adams'] == 4 and solution['Cox'] == 5:
+            return True
+    return False
+#print(answer_e())
+print(str(answer_e()) + ' - Answer E: Drake, Edwards, Bates, Adams, Cox.')
