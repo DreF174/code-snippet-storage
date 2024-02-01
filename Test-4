@@ -1,0 +1,150 @@
+from constraint import Problem
+
+# Step 1. Create a new `Problem` instance. This will be the object where you define your variables and constraints.
+problem = Problem()
+
+# Step 2. Identify the LSAT game type and explain why.
+# This game type is a grouping game because the cookies are being put into groups, a group for each day of the week.
+# Step 3. Identify and define the variables and their domains
+# The variables are the cookies. We further define the variables as oatmeal, peanut butter, and sugar for each batch of cookies.
+batches = ['oatmeal1', 'oatmeal2', 'oatmeal3', 'peanut_butter1', 'peanut_butter2', 'peanut_butter3', 'sugar1', 'sugar2', 'sugar3']
+# Identify and define the domains.
+# The domains are the days of the week: Monday, Tuesday, Wednesday, Thursday, and Friday.
+days = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"]
+
+#Step 4. # Identify any domains that require ordering and create a dictionary mapping numbers to the objects in the domain.
+# No ordering is required, so we will not create a dictionary mapping numbers to the objects in the domain.
+
+
+# Step 5. Add variables and domains to the problem
+for batch in batches:
+    problem.addVariable(batch, days)
+
+# Step 6. Add the orignal constraints. Each rule translates to a constraint in your problem.
+ 
+# Rule 1: Exactly three batches of each kind of cookie are made each week (Monday through Friday) and each batch is made, from start to finish, on a single day. This rule is already satisfied by the domains and variables we have defined.
+
+
+# Rule 2: No two batches of the same kind of cookie are made on the same day.
+def rule_2_constraint(oatmeal1, oatmeal2, oatmeal3, peanut_butter1, peanut_butter2, peanut_butter3, sugar1, sugar2, sugar3):
+    # If two batches of the same kind of cookie are made on the same day, then the constraint is not satisfied
+    if oatmeal1 == oatmeal2 or oatmeal1 == oatmeal3 or oatmeal2 == oatmeal3 or peanut_butter1 == peanut_butter2 or peanut_butter1 == peanut_butter3 or peanut_butter2 == peanut_butter3 or sugar1 == sugar2 or sugar1 == sugar3 or sugar2 == sugar3:
+        return False
+    # If no two batches of the same kind of cookie are made on the same day, then the constraint is satisfied
+    else:
+        return True
+
+# Add the constraint to the problem
+problem.addConstraint(rule_2_constraint, batches)
+
+
+# Rule 3: At least one batch of cookies is made on Monday.
+def rule_3_constraint(oatmeal1, oatmeal2, oatmeal3, peanut_butter1, peanut_butter2, peanut_butter3, sugar1, sugar2, sugar3):
+    # If no batches of cookies are made on Monday, then the constraint is not satisfied
+    if oatmeal1 != 'Monday' and oatmeal2 != 'Monday' and oatmeal3 != 'Monday' and peanut_butter1 != 'Monday' and peanut_butter2 != 'Monday' and peanut_butter3 != 'Monday' and sugar1 != 'Monday' and sugar2 != 'Monday' and sugar3 != 'Monday':
+        return False
+    return True
+
+# Add the constraint to the problem
+problem.addConstraint(rule_3_constraint, batches)
+
+# Rule 4: The second batch of oatmeal cookies is made on the same day as the first batch of peanut butter cookies.
+def rule_4_constraint(oatmeal2, peanut_butter1,):
+    # If the second batch of oatmeal cookies is not made on the same day as the first batch of peanut butter cookies, then the constraint is not satisfied
+    if oatmeal2 != peanut_butter1:
+        return False
+    # If the second batch of oatmeal cookies is made on the same day as the first batch of peanut butter cookies, then the constraint is satisfied
+    else:
+        return True
+# Add the constraint to the problem
+problem.addConstraint(rule_4_constraint, ('oatmeal2', 'peanut_butter1'))
+
+# Rule 5: The second batch of sugar cookies is made on Thursday.
+def rule_5_constraint(sugar2):
+    # If the second batch of sugar cookies is not made on Thursday, then the constraint is not satisfied
+    if sugar2 != 'Thursday':
+        return False
+    # If the second batch of sugar cookies is made on Thursday, then the constraint is satisfied
+    else:
+        return True
+# Add the constraint to the problem
+problem.addConstraint(rule_5_constraint, ('sugar2',))
+
+# Question Rule: If no batch of cookies is made on Wednesday.
+def question_rule_constraint(oatmeal1, oatmeal2, oatmeal3, peanut_butter1, peanut_butter2, peanut_butter3, sugar1, sugar2, sugar3):
+    # If no batches of cookies are made on Wednesday, then the constraint is satisfied
+    if oatmeal1 != 'Wednesday' and oatmeal2 != 'Wednesday' and oatmeal3 != 'Wednesday' and peanut_butter1 != 'Wednesday' and peanut_butter2 != 'Wednesday' and peanut_butter3 != 'Wednesday' and sugar1 != 'Wednesday' and sugar2 != 'Wednesday' and sugar3 != 'Wednesday':
+        return True
+    # If at least one batch of cookies is made on Wednesday, then the constraint is not satisfied
+    else:
+        return False
+# Add the constraint to the problem
+problem.addConstraint(question_rule_constraint, batches)
+
+# Step 7. Determine all possible solutions that exist after applying the original rules stated above. These rules and constraints will be assumed and imposed on the answer choices below
+
+solutions = problem.getSolutions()
+#print(solutions)
+#print("The possible solutions are: " + str(solutions))
+#count the number of solutions
+print("200312_1-G_3_16_D The number of possible solutions is: " + str(len(solutions)))	
+
+# Step 8: Determine if each answer choice is possible by adding the question constraint to the answer choice constraint and seeing if the answer choice is satisfied by the possible solutions.
+
+# Answer A. Exactly three batches of cookies are made on Tuesday.
+#This function counts the total number of batches of cookies made on Tuesday and checks to see if it is equal to three. If the function iterates over the entire solutions collection and finds any order where exactly three batches of cookies are made on Tuesday, it will return True.
+def answer_a():
+    for solution in solutions:
+        tuesday = sum(1 for batch, day in solution.items() if day == 'Tuesday')
+        if tuesday == 3:
+            return True
+    return False
+#print(answer_a())
+
+print(str(answer_a()) + ' - Answer A: Exactly three batches of cookies are made on Tuesday.')
+
+# Answer B. Exactly three batches of cookies are made on Friday.
+
+#This function counts the total number of batches of cookies made on Friday and checks to see if it is equal to three. If the function iterates over the entire solutions collection and finds any order where exactly three batches of cookies are made on Friday, it will return True.
+def answer_b():
+    for solution in solutions:
+        friday = sum(1 for batch, day in solution.items() if day == 'Friday')
+        if friday == 3:
+            return True
+    return False
+#print(answer_b())
+print(str(answer_b()) + ' - Answer B: Exactly three batches of cookies are made on Friday.')
+
+# Answer C. At least two batches of cookies are made on Monday.
+#This function counts the total number of batches of cookies made on Monday and checks to see if it is greater than or equal to two. If the function iterates over the entire solutions collection and finds any order where at least two batches of cookies are made on Monday, it will return True.
+def answer_c():
+    for solution in solutions:
+        monday = sum(1 for batch, day in solution.items() if day == 'Monday')
+        if monday >= 2:
+            return True
+    return False
+#print(answer_c())
+print(str(answer_c()) + ' - Answer C: At least two batches of cookies are made on Monday.')
+
+# Answer D. At least two batches of cookies are made on Thursday.
+#This function counts the total number of batches of cookies made on Thursday and checks to see if it is greater than or equal to two. If the function iterates over the entire solutions collection and finds any order where at least two batches of cookies are made on Thursday, it will return True.
+def answer_d():
+    for solution in solutions:
+        thursday = sum(1 for batch, day in solution.items() if day == 'Thursday')
+        if thursday >= 2:
+            return True
+    return False
+#print(answer_d())
+print(str(answer_d()) + ' - Answer D: At least two batches of cookies are made on Thursday.')
+
+# Answer E. Fewer batches of cookies are made on Monday than on Tuesday.
+#This function counts the total number of batches of cookies made on Monday and Tuesday and checks to see if the number of batches made on Monday is less than the number of batches made on Tuesday. If the function iterates over the entire solutions collection and finds any order where fewer batches of cookies are made on Monday than on Tuesday, it will return True.
+def answer_e():
+    for solution in solutions:
+        monday = sum(1 for batch, day in solution.items() if day == 'Monday')
+        tuesday = sum(1 for batch, day in solution.items() if day == 'Tuesday')
+        if monday < tuesday:
+            return True
+    return False
+#print(answer_e())
+print(str(answer_e()) + ' - Answer E: Fewer batches of cookies are made on Monday than on Tuesday.')
