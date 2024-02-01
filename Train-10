@@ -1,0 +1,109 @@
+from constraint import Problem
+
+# Step 1. Create a new `Problem` instance. This will be the object where you define your variables and constraints.
+problem = Problem()
+
+# Step 2. Identify the LSAT game type and explain why.
+# This game type is an ordering game because the participants are compositions being put into a specific order.
+
+# Step 3. Identify and define the variables of the problem.
+# Identify the variables and domains
+compositions = ['F', 'H', 'L', 'O', 'P', 'R', 'S', 'T']
+problem.addVariables(compositions, range(1, 9))
+
+#Step 4. # Identify any domains that require ordering and create a dictionary mapping numbers to the objects in the domain.
+# In this case the positions are already ordered, so we will not create a dictionary mapping numbers to the positions.
+
+# Step 5. Add variables and domains to the problem
+
+    
+# Step 6. Add the orignal constraints. Each rule translates to a constraint in your problem.
+
+#Rule 1: Exactly eight compositions—F, H, L, O, P, R, S, and T—are to be performed exactly once each, consecutively and one composition at a time.
+#problem.addConstraint(AllDifferentConstraint(), ('F', 'H', 'L', 'O', 'P', 'R', 'S', 'T'))
+
+#Rule 2: T performs either immediately before F or immediately after R.
+# Add a constraint that ensures that T is performed either immediately before F or immediately after R.
+problem.addConstraint(lambda T, F, R: (T == F - 1) or (T == R + 1), ('T', 'F', 'R'))
+
+#Rule 3: At least two compositions are performed either after F and before R, or after R and before F.
+problem.addConstraint(lambda F, R: abs(F - R) > 2, ('F', 'R'))
+
+
+#Rule 4: O is performed either first or fifth.
+# Add a constraint that ensures that O is performed either first or fifth.
+problem.addConstraint(lambda O: O == 1 or O == 5, ('O',))
+
+#Rule 5: The eighth composition performed is either L or H.
+# Add a constraint that ensures that the eighth composition performed is either L or H.
+problem.addConstraint(lambda L, H: L == 8 or H == 8, ('L', 'H'))
+
+#Rule 6: P is performed at some time before S.
+# Add a constraint that ensures that P is performed at some time before S.
+problem.addConstraint(lambda P, S: P < S, ('P', 'S'))
+
+#Rule 7: At least one composition is performed either after O and before S, or after S and before O.
+problem.addConstraint(lambda O, S: abs(O - S) > 1, ('O', 'S'))
+
+#Question Rule: If T is performed fifth and F is performed sixth, then S must be performed either fourth or seventh.
+problem.addConstraint(lambda T, F, S: T == 5 and F == 6 and (S == 4 or S == 7), ('T', 'F', 'S'))
+
+# Step 7. Determine all possible solutions that exist after applying the original rules stated above. These rules and constraints will be assumed and imposed on the answer choices below,
+
+solutions = problem.getSolutions()
+#print(solutions)
+#print("The possible solutions are: " + str(solutions))
+#count the number of solutions
+print("problem_200010_3-G_3_14_A - the number of possible solutions is: " + str(len(solutions)))		
+
+# Step 8: Determine if each answer choice is possible by adding the question constraint to the answer choice constraint and seeing if the answer choice is satisfied by the possible solutions.
+
+# Answer A. fourth or seventh
+#The function for Answer A is designed to incorporate the question rule and iterate over a collection called solutions. The function assumes that T is performed fifth and F is performed sixth and checks to see if it is possible for S to be performed fourth or seventh. If the function iterates over the entire solutions collection and finds any order where T is performed fifth and F is performed sixth and S is performed fourth or seventh, it will return True.
+def answer_a():
+    for solution in solutions:
+        if solution['T'] == 5 and solution['F'] == 6 and (solution['S'] == 4 or solution['S'] == 7):
+            return True
+    return False
+#print(answer_a())
+print(str(answer_a()) + ' - Answer A: fourth or seventh.')
+
+# Answer B. third or sixth
+#The function for Answer B is designed to incorporate the question rule and iterate over a collection called solutions. The function assumes that T is performed fifth and F is performed sixth and checks to see if it is possible for S to be performed third or sixth. If the function iterates over the entire solutions collection and finds any order where T is performed fifth and F is performed sixth and S is performed third or sixth, it will return True.
+def answer_b():
+    for solution in solutions:
+        if solution['T'] == 5 and solution['F'] == 6 and (solution['S'] == 3 or solution['S'] == 6):
+            return True
+    return False
+#print(answer_b())
+print(str(answer_b()) + ' - Answer B: third or sixth.')
+
+# Answer C. third or fourth
+#The function for Answer C is designed to incorporate the question rule and iterate over a collection called solutions. The function assumes that T is performed fifth and F is performed sixth and checks to see if it is possible for S to be performed third or fourth. If the function iterates over the entire solutions collection and finds any order where T is performed fifth and F is performed sixth and S is performed third or fourth, it will return True.
+def answer_c():
+    for solution in solutions:
+        if solution['T'] == 5 and solution['F'] == 6 and (solution['S'] == 3 or solution['S'] == 4):
+            return True
+    return False
+#print(answer_c())
+print(str(answer_c()) + ' - Answer C: third or fourth.')
+
+# Answer D. second or seventh
+#The function for Answer D is designed to incorporate the question rule and iterate over a collection called solutions. The function assumes that T is performed fifth and F is performed sixth and checks to see if it is possible for S to be performed second or seventh. If the function iterates over the entire solutions collection and finds any order where T is performed fifth and F is performed sixth and S is performed second or seventh, it will return True.
+def answer_d():
+    for solution in solutions:
+        if solution['T'] == 5 and solution['F'] == 6 and (solution['S'] == 2 or solution['S'] == 7):
+            return True
+    return False
+#print(answer_d())
+print(str(answer_d()) + ' - Answer D: second or seventh.')
+
+# Answer E. first or fourth
+#The function for Answer E is designed to incorporate the question rule and iterate over a collection called solutions. The function assumes that T is performed fifth and F is performed sixth and checks to see if it is possible for S to be performed first or fourth. If the function iterates over the entire solutions collection and finds any order where T is performed fifth and F is performed sixth and S is performed first or fourth, it will return True.
+def answer_e():
+    for solution in solutions:
+        if solution['T'] == 5 and solution['F'] == 6 and (solution['S'] == 1 or solution['S'] == 4):
+            return True
+    return False
+#print(answer_e())
+print(str(answer_e()) + ' - Answer E: first or fourth.')
