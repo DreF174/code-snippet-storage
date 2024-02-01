@@ -1,0 +1,116 @@
+from constraint import Problem
+
+# Step 1. Create a new `Problem` instance. This will be the object where you define your variables and constraints.
+problem = Problem()
+
+# Step 2. Identify the LSAT game type and explain why.
+# This game type is a grouping game because the participants are scientists being put into groups, a group for those selected and a group for those not selected.
+
+# Step 3. Identify and define the variables and their domains
+
+# The variables are the scientists. We further define the variables as botanists, chemists, and zoologists.
+botanists = ['F', 'G', 'H']
+chemists = ['K', 'L', 'M']
+zoologists = ['P', 'Q', 'R']
+# Identify and define the domains.
+# The domains are the groups: selected and not selected represented by 1 and 0 respectively.
+
+#Step 4. # Identify any domains that require ordering and create a dictionary mapping numbers to the objects in the domain.
+# In this case none the question does not require ordering, so we will not create a dictionary mapping numbers to the objects in the domain.
+
+# Step 5. Add variables and domains to the problem
+problem.addVariables(botanists + chemists + zoologists, [0, 1])
+    
+# Step 6. Add the orignal constraints. Each rule translates to a constraint in your problem.
+
+# Rule 1: A panel of five scientists will be formed.
+problem.addConstraint(ExactSumConstraint(5), botanists + chemists + zoologists)
+
+# Rule 2: The panel must include at least one scientist of each of the three types.
+problem.addConstraint(constraint.MinSumConstraint(1), botanists)
+problem.addConstraint(constraint.MinSumConstraint(1), chemists)
+problem.addConstraint(constraint.MinSumConstraint(1), zoologists)
+
+
+# Rule 3: If more than one botanist is selected, then at most one zoologist is selected.
+def botanist_zoologist_constraint(*scientists):
+    # Check if more than one botanist is selected
+    if sum(scientist in botanists for scientist in scientists) > 1:
+        # Check if more than one zoologist is selected
+        if sum(scientist in zoologists for scientist in scientists) <= 1:
+            return True
+    return False
+# Add the constraint to the problem
+problem.addConstraint(botanist_zoologist_constraint, botanists + chemists + zoologists)
+
+# Rule 4: F and K cannot both be selected.
+problem.addConstraint(lambda F, K: F + K <= 1, ['F', 'K'])
+
+# Rule 5: K and M cannot both be selected.
+problem.addConstraint(lambda K, M: M == 1 and K == 0, ['K', 'M'])
+
+# Rule 6: If M is selected, both P and R must be selected.
+problem.addConstraint(lambda M, P, R: M == 1 and P == 1 and R == 1, ['M', 'P', 'R'])
+
+# Question Rule: M is the only chemist selected for the panel.
+problem.addConstraint(lambda K, L, M: M == 1 and K + L == 0, ['K', 'L', 'M'])
+
+# Step 7. Determine all possible solutions that exist after applying the original rules stated above. These rules and constraints will be assumed and imposed on the answer choices below,
+
+solutions = problem.getSolutions()
+#print(solutions)
+print("The possible solutions are: " + str(solutions))
+#count the number of solutions
+print("problem_200312_1-G_1_2_E The number of possible solutions is: " + str(len(solutions)))
+
+# Step 8: Determine if each answer choice is possible by adding the question constraint to the answer choice constraint and seeing if the answer choice is satisfied by the possible solutions.
+
+# Answer A. F and G are both selected.
+#The function  checks to see if there is a solution where F and G are both selected, it will return True.
+def answer_a():
+    for solution in solutions:
+        if solution['F'] == 1 and solution['G'] == 1:
+            return True
+    return False
+#print(answer_a())
+print(str(answer_a()) + ' - Answer A: F and G are both selected.')
+
+# Answer B. G and H are both selected.
+#The function  checks to see if there is a solution where G and H are both selected, it will return True.
+def answer_b():
+    for solution in solutions:
+        if solution['G'] == 1 and solution['H'] == 1:
+            return True
+    return False
+#print(answer_b())
+print(str(answer_b()) + ' - Answer B: G and H are both selected.')
+
+# Answer C. H and P are both selected.
+#The function  checks to see if there is a solution where H and P are both selected, it will return True.
+def answer_c():
+    for solution in solutions:
+        if solution['H'] == 1 and solution['P'] == 1:
+            return True
+    return False
+#print(answer_c())
+print(str(answer_c()) + ' - Answer C: H and P are both selected.')
+
+# Answer D. F, G, and H are all selected.
+#The function  checks to see if there is a solution where F, G, and H are all selected, it will return True.
+def answer_d():
+    for solution in solutions:
+        if solution['F'] == 1 and solution['G'] == 1 and solution['H'] == 1:
+            return True
+    return False
+#print(answer_d())
+print(str(answer_d()) + ' - Answer D: F, G, and H are all selected.')
+
+# Answer E. P, Q, and R are all selected.
+#The function  checks to see if there is a solution where P, Q, and R are all selected, it will return True.
+def answer_e():
+    for solution in solutions:
+        if solution['P'] == 1 and solution['Q'] == 1 and solution['R'] == 1:
+            return True
+    return False
+#print(answer_e())
+print(str(answer_e()) + ' - Answer E: P, Q, and R are all selected.')
