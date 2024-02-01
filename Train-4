@@ -4,101 +4,98 @@ from constraint import Problem
 problem = Problem()
 
 # Step 2. Identify the LSAT game type and explain why.
-# This game type is an assignment game because the participants are cashiers being assigned days of the week to work given certain rules and constraints.
+# This game type is an assignment game because the participants are cargo being assigned to a certain bay,given certain rules and constraints.
 
 # Step 3. Identify and define the variables of the problem.
 # Define the variables
-# The variables are the cashiers
-cashiers = ['Adams', 'Bates', 'Cox', 'Drake', 'Edwards']
+# The variables are the cargo
+cargos = ['fuel', 'grain', 'livestock', 'machinery', 'produce', 'textiles']
 # Define the domains
-# The domains are the work days of the week.
-work_days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday']
+# Their domains are the bays they can be assigned to.
+bays = ['one', 'two', 'three', 'four', 'five', 'six']
 
 #Step 4. # Identify any domains that require ordering and create a dictionary mapping numbers to the objects in the domain.
-# In this case, the work days need to be ordered, so we will create a dictionary mapping numbers to the work days.
-# Create a dictionary mapping the days of the week to numbers
-work_days = {1: 'Monday', 2: 'Tuesday', 3: 'Wednesday', 4: 'Thursday', 5: 'Friday'}
+# In this case, the cargo needs to be ordered in the bays, so we will create a dictionary mapping numbers to each bay.
+# Create a dictionary mapping the bays to numbers
+bays = {1: 'one', 2: 'two', 3: 'three', 4: 'four', 5: 'five', 6: 'six'}
 
 # Step 5. Add variables and domains to the problem
-for cashier in cashiers:
-    problem.addVariable(cashier, work_days)
+for cargo in cargos:
+    problem.addVariable(cargo, bays)
     
 # Step 6. Add the orignal constraints. Each rule translates to a constraint in your problem.
 
-#Rule 1: Each cashier works alone on exactly one day, Monday through Friday. 
-#Because the number of cashiers is equal to the number of days of the week, and none of the answer constraints creates a disparity between the number of cashiers and the number of days of the week, we can use the AllDifferentConstraint() to ensure that each cashier works alone on exactly one day.
-problem.addConstraint(AllDifferentConstraint(), cashiers)
+#Rule 1: Each bay is holding a different one of exactly six types of cargo
+problem.addConstraint(AllDifferentConstraint(), cargos)
 
-#Rule 2: Adams will work only on Tuesday or Thursday.
-problem.addConstraint(lambda a: a == 2 or a == 4, ('Adams',))
+#Rule 2: The bay holding grain has a higher number than the bay holding livestock.
+problem.addConstraint(lambda g, l: g > l, ('grain', 'livestock'))
 
-#Rule 3: Bates will not work on Monday or Wednesday.
-problem.addConstraint(lambda b: b != 1 and b != 3, ('Bates',))
+#Rule 3: The bay holding livestock has a higher number than the bay holding textiles.
+problem.addConstraint(lambda l, t: l > t, ('livestock', 'textiles'))
 
-#Rule 4: Cox works on Friday.
-problem.addConstraint(lambda c: c == 5, ('Cox',))
+#Rule 4: The bay holding produce has a higher number than the bay holding fuel.
+problem.addConstraint(lambda p, f: p > f, ('produce', 'fuel'))
 
-# Rule 5: Edwards cannot work next to Drake.
-problem.addConstraint(lambda e, d: e != d + 1 and e != d - 1, ('Edwards', 'Drake'))
+#Rule 5: The bay holding textiles is next to the bay holding produce.
+problem.addConstraint(lambda t, p: t == p + 1 or t == p - 1, ('textiles', 'produce'))
+
 
 # Step 7. Determine all possible solutions that exist after applying the original rules stated above. These rules and constraints will be assumed and imposed on the answer choices below
 solutions = problem.getSolutions()
 #print(solutions)
 #print("The possible solutions are: " + str(solutions))
 #count the number of solutions
-print("problem_cashiers_1_D The number of possible solutions is: " + str(len(solutions)))
+print("problem_dock_loading_1_A The number of possible solutions is: " + str(len(solutions)))
 
-# Step 8: Determine if each answer choice is possible by adding the question constraint to the answer choice constraint and seeing if the answer choice is satisfied by the possible solutions.
+# Step 10: Determine if each answer choice is possible by adding the question constraint to the answer choice constraint and seeing if the answer choice is satisfied by the possible solutions.
 
-# The Python function answer_a() is designed to iterate over a collection called solutions. If the function iterates over the entire solutions collection and does not find any item where the order is Edwards, Bates, Adams, Drake, Cox, it will return False.
-#
+# The Python function answer_a() is designed to iterate over a collection called solutions. If the function iterates over the entire solutions collection and does not find any item where the cargo in bay 4 is grain, it will return False.
 def answer_a():
     for solution in solutions:
-        # Edwards, Bates, Adams, Drake, Cox
-        if solution['Edwards'] == 1 and solution['Bates'] == 2 and solution['Adams'] == 3 and solution['Drake'] == 4 and solution['Cox'] == 5:
+        # The cargo in bay 4 is grain
+        if solution['grain'] == 4:
             return True
     return False
 #print(answer_a())
-print(str(answer_a()) + ' - Answer A: Edwards, Bates, Adams, Drake, Cox.')
-  
+print(str(answer_a()) + ' - Answer A: The cargo in bay 4 is grain.')
 
-# The Python function answer_b() is designed to iterate over a collection called solutions. If the function iterates over the entire solutions collection and does not find any item where the order is Drake, Adams, Bates, Edwards, Cox, it will return False.
+# The Python function answer_b() is designed to iterate over a collection called solutions. If the function iterates over the entire solutions collection and does not find any item where the cargo in bay 4 is livestock, it will return False.
 def answer_b():
     for solution in solutions:
-        # Drake, Adams, Bates, Edwards, Cox
-        if solution['Drake'] == 1 and solution['Adams'] == 2 and solution['Bates'] == 3 and solution['Edwards'] == 4 and solution['Cox'] == 5:
+        # The cargo in bay 4 is livestock
+        if solution['livestock'] == 4:
             return True
     return False
 #print(answer_b())
-print(str(answer_b()) + ' - Answer B: Drake, Adams, Bates, Edwards, Cox.')
+print(str(answer_b()) + ' - Answer B: The cargo in bay 4 is livestock.')
 
-# The Python function answer_c() is designed to iterate over a collection called solutions. If the function iterates over the entire solutions collection and does not find any item where the order is Edwards, Adams, Cox, Bates, Drake, it will return False.
+# The Python function answer_c() is designed to iterate over a collection called solutions. If the function iterates over the entire solutions collection and does not find any item where the cargo in bay 4 is machinery, it will return False.
 def answer_c():
     for solution in solutions:
-        # Edwards, Adams, Cox, Bates, Drake
-        if solution['Edwards'] == 1 and solution['Adams'] == 2 and solution['Cox'] == 3 and solution['Bates'] == 4 and solution['Drake'] == 5:
+        # The cargo in bay 4 is machinery
+        if solution['machinery'] == 4:
             return True
     return False
 #print(answer_c())
-print(str(answer_c()) + ' - Answer C: Edwards, Adams, Cox, Bates, Drake.')
+print(str(answer_c()) + ' - Answer C: The cargo in bay 4 is machinery.')
 
-# The Python function answer_d() is designed to iterate over a collection called solutions. If the function iterates over the entire solutions collection and does not find any item where the order is Edwards, Adams, Drake, Bates, Cox, it will return False.
+# The Python function answer_d() is designed to iterate over a collection called solutions. If the function iterates over the entire solutions collection and does not find any item where the cargo in bay 4 is produce, it will return False.
 def answer_d():
     for solution in solutions:
-        # Edwards, Adams, Drake, Bates, Cox
-        if solution['Edwards'] == 1 and solution['Adams'] == 2 and solution['Drake'] == 3 and solution['Bates'] == 4 and solution['Cox'] == 5:
+        # The cargo in bay 4 is produce
+        if solution['produce'] == 4:
             return True
     return False
 #print(answer_d())
-print(str(answer_d()) + ' - Answer D: Edwards, Adams, Drake, Bates, Cox.')
+print(str(answer_d()) + ' - Answer D: The cargo in bay 4 is produce.')
 
-
-# The Python function answer_e() is designed to iterate over a collection called solutions. If the function iterates over the entire solutions collection and does not find any item where the order is Drake, Edwards, Bates, Adams, Cox, it will return False.
+# The Python function answer_e() is designed to iterate over a collection called solutions. If the function iterates over the entire solutions collection and does not find any item where the cargo in bay 4 is textiles, it will return False.
 def answer_e():
     for solution in solutions:
-        # Drake, Edwards, Bates, Adams, Cox
-        if solution['Drake'] == 1 and solution['Edwards'] == 2 and solution['Bates'] == 3 and solution['Adams'] == 4 and solution['Cox'] == 5:
+        # The cargo in bay 4 is textiles
+        if solution['textiles'] == 4:
             return True
     return False
 #print(answer_e())
-print(str(answer_e()) + ' - Answer E: Drake, Edwards, Bates, Adams, Cox.')
+print(str(answer_e()) + ' - Answer E: The cargo in bay 4 is textiles.')
