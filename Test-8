@@ -1,0 +1,187 @@
+from constraint import Problem
+
+# Step 1. Create a new `Problem` instance. This will be the object where you define your variables and constraints.
+problem = Problem()
+
+# Step 2. Identify the LSAT game type and explain why.
+# This game type is a grouping game because the participants are scientists being put into groups, a group for those selected and a group for those not selected.
+
+# Step 3. Identify and define the variables and their domains
+# The variables are the scientists. We further define the variables as botanists, chemists, and zoologists.
+scientists = ["F", "G", "H", "K", "L", "M", "P", "Q", "R"]
+botanists = ["F", "G", "H"]
+chemists = ["K", "L", "M"]
+zoologists = ["P", "Q", "R"]
+# Identify and define the domains.
+# The domains are the groups: selected and not_selected
+groups= ["selected", "not_selected"]
+
+#Step 4. # Identify any domains that require ordering and create a dictionary mapping numbers to the objects in the domain.
+# In this case none the question does not require ordering, so we will not create a dictionary mapping numbers to the objects in the domain.
+
+# Step 5. Add variables and domains to the problem
+for scientist in scientists:
+    problem.addVariable(scientist, groups)
+    
+# Step 6. Add the orignal constraints. Each rule translates to a constraint in your problem.
+
+#Rule 1: A panel of five scientists will be formed.
+def rule_1_constraint(*scientists):
+    # Convert the scientists to 1 if 'selected' and 0 otherwise
+    selected_scientists = [1 if scientist == 'selected' else 0 for scientist in scientists]
+    # Count the number of scientists selected
+    total_selected = sum(selected_scientists)
+    # Ensure that the number of scientists selected is five
+    return total_selected == 5
+# Add the constraint to the problem
+problem.addConstraint(rule_1_constraint, scientists)
+
+#Rule 2: The panel must include at least one scientist of each of the three types.
+def rule_2_constraint(botanist_1, botanist_2, botanist_3, chemist_1, chemist_2, chemist_3, zoologist_1, zoologist_2, zoologist_3):
+    # Convert the botanists to 1 if 'selected' and 0 otherwise
+    botanists = [botanist_1, botanist_2, botanist_3]
+    selected_botanists = [1 if scientist == 'selected' else 0 for scientist in botanists]
+    # Count the number of botanists selected
+    total_botanists = sum(selected_botanists)
+    # Convert the chemists to 1 if 'selected' and 0 otherwise
+    chemists = [chemist_1, chemist_2, chemist_3]
+    selected_chemists = [1 if scientist == 'selected' else 0 for scientist in chemists]
+    # Count the number of chemists selected
+    total_chemists = sum(selected_chemists)
+    # Convert the zoologists to 1 if 'selected' and 0 otherwise
+    zoologists = [zoologist_1, zoologist_2, zoologist_3]
+    selected_zoologists = [1 if scientist == 'selected' else 0 for scientist in zoologists]
+    # Count the number of zoologists selected
+    total_zoologists = sum(selected_zoologists)
+    # Ensure that the number of botanists, chemists, and zoologists selected is at least one
+    return total_botanists >= 1 and total_chemists >= 1 and total_zoologists >= 1
+# Add the constraint to the problem
+problem.addConstraint(rule_2_constraint, scientists)
+
+#Rule 3: If more than one botanist is selected, then at most one zoologist is selected.
+def rule_3_constraint(*scientists):
+    # Split the scientists into botanists and zoologists
+    botanists = scientists[:3]
+    zoologists = scientists[3:]
+    # Convert the botanists and zoologists to 1 if 'selected' and 0 otherwise
+    selected_botanists = [1 if scientist == 'selected' else 0 for scientist in botanists]
+    selected_zoologists = [1 if scientist == 'selected' else 0 for scientist in zoologists]
+    # Count the number of botanists and zoologists selected
+    total_botanists = sum(selected_botanists)
+    total_zoologists = sum(selected_zoologists)
+    # If more than one botanist is selected, then at most one zoologist is selected
+    if total_botanists > 1:
+        return total_zoologists <= 1
+    # If not more than one botanist is selected, then there is no restriction on the number of zoologists
+    else:
+        return True
+# Add the constraint to the problem
+problem.addConstraint(rule_3_constraint, botanists + zoologists)
+
+#Rule 4: F and K cannot both be selected.
+def rule_4_constraint(F, K):
+    # If F is selected, K cannot be selected, and vice versa
+    if F == 'selected':
+        return K != 'selected'
+    elif K == 'selected':
+        return F != 'selected'
+    # If neither F nor K is selected, then there is no restriction
+    else:
+        return True
+# Add the constraint to the problem
+problem.addConstraint(rule_4_constraint, ('F', 'K'))
+
+#Rule 5: K and M cannot both be selected.
+def rule_5_constraint(K, M):
+    # If K is selected, M cannot be selected, and vice versa
+    if K == 'selected':
+        return M != 'selected'
+    elif M == 'selected':
+        return K != 'selected'
+    # If neither K nor M is selected, then there is no restriction
+    else:
+        return True
+# Add the constraint to the problem
+problem.addConstraint(rule_5_constraint, ('K', 'M'))
+
+#Rule 6: If M is selected, both P and R must be selected.
+def rule_6_constraint(M, P, R):
+    # If M is selected, both P and R must be selected
+    if M == 'selected':
+        return P == 'selected' and R == 'selected'
+    # If M is not selected, then there is no restriction
+    else:
+        return True
+# Add the constraint to the problem
+problem.addConstraint(rule_6_constraint, ('M', 'P', 'R'))
+
+#Question Rule: If M is the only chemist selected for the panel, which one of the following MUST be true?
+## To add the question rule, we assume that the rule is triggered and add it as a constraint to the problem.
+# M is the only chemist selected for the panel. This means that K and L are not selected.
+def question_rule_constraint(M, K, L):
+    # If M is selected, then K and L are not selected
+    if M == 'selected' and K != 'selected' and L != 'selected':
+        return True
+    return False
+# Add the constraint to the problem
+problem.addConstraint(question_rule_constraint, ('M', 'K', 'L'))
+
+# Step 7. Determine all possible solutions that exist after applying the original rules stated above. These rules and constraints will be assumed and imposed on the answer choices below
+solutions = problem.getSolutions()
+#print(solutions)
+#print("The first 10 possible solutions are: " + str(solutions[:10]))
+#print("The possible solutions are: " + str(solutions))
+#count the number of solutions
+print("problem_2200312_1-G_1_2_E - the number of possible solutions is: " + str(len(solutions)))
+
+# # Step 8: Determine if each answer choice by adding the rule constraint, and checking to see if any of the answers solutions MUST be true by checking to see if there are any solutions that DO NOT satisfy the constraint. If NONE of the solutions violate the constraint, then the answer choice MUST be true, if not return False.
+
+# Answer A. F and G are both selected.
+#check to see if there are any solutions that DO NOT satisfy the constraint, if so return False
+def answer_a():
+    for solution in solutions:
+        if solution['F'] != 'selected' or solution['G'] != 'selected':
+            return False
+    return True
+#print(answer_a())
+print(str(answer_a()) + ' - Answer A: F and G are both selected.')
+
+# Answer B. G and H are both selected.
+#check to see if there are any solutions that DO NOT satisfy the constraint, if so return False
+def answer_b():
+    for solution in solutions:
+        if solution['G'] != 'selected' or solution['H'] != 'selected':
+            return False
+    return True
+#print(answer_b())
+print(str(answer_b()) + ' - Answer B: G and H are both selected.')
+
+# Answer C. H and P are both selected.
+#check to see if there are any solutions that DO NOT satisfy the constraint, if so return False
+def answer_c():
+    for solution in solutions:
+        if solution['H'] != 'selected' or solution['P'] != 'selected':
+            return False
+    return True
+#print(answer_c())
+print(str(answer_c()) + ' - Answer C: H and P are both selected.')
+
+# Answer D. F, G, and H are all selected.
+#check to see if there are any solutions that DO NOT satisfy the constraint, if so return False
+def answer_d():
+    for solution in solutions:
+        if solution['F'] != 'selected' or solution['G'] != 'selected' or solution['H'] != 'selected':
+            return False
+    return True
+#print(answer_d())
+print(str(answer_d()) + ' - Answer D: F, G, and H are all selected.')
+
+# Answer E. P, Q, and R are all selected.
+#check to see if there are any solutions that DO NOT satisfy the constraint, if so return False
+def answer_e():
+    for solution in solutions:
+        if solution['P'] != 'selected' or solution['Q'] != 'selected' or solution['R'] != 'selected':
+            return False
+    return True
+#print(answer_e())
+print(str(answer_e()) + ' - Answer E: P, Q, and R are all selected.')
