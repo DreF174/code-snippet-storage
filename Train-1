@@ -1,0 +1,59 @@
+from constraint import Problem
+
+# Step 1: Create a new Problem instance
+problem = Problem()
+
+# Step 2: Identify and define the variables
+directors = ['A', 'B', 'C', 'D', 'E', 'F', 'G']
+# Define the domains
+committees = [1, 2]  # 1 for X, 2 for Y
+
+# Step 3: Add variables and domains to the problem
+for director in directors:
+    problem.addVariable(director, committees)
+
+# Step 4: Add the original constraints
+# Rule 2: If A serves on X (1), then B serves on Y (2)
+problem.addConstraint(lambda a, b: b == 2 if a == 1 else True, ('A', 'B'))
+# Rule 3: If C serves on X (1), then D and E serve on Y (2)
+problem.addConstraint(lambda c, d, e: all([d == 2, e == 2]) if c == 1 else True, ('C', 'D', 'E'))
+# Rule 4: F serves on a different committee with G
+problem.addConstraint(lambda f, g: f != g, ('F', 'G'))
+# Rule 5: E serves on a different committee with A
+problem.addConstraint(lambda e, a: e != a, ('E', 'A'))
+# Rule 6: If G serves on X (1), so does B
+problem.addConstraint(lambda g, b: b == 1 if g == 1 else True, ('G', 'B'))
+
+# Step 5: Determine all possible solutions
+solutions = problem.getSolutions()
+
+# Step 6: Answer the questions
+def answer_checker(question_constraint, answer_constraint):
+    for solution in solutions:
+        if question_constraint(solution):
+            if answer_constraint(solution):
+                return True
+    return False
+
+# Define question constraint
+question_constraint = lambda sol: sol['D'] == 1 and sol['F'] == 1  # D and F both serve on X
+
+# Answer A: A and C both serve on the X committee
+answer_a_constraint = lambda sol: sol['A'] == 1 and sol['C'] == 1
+print(str(answer_checker(question_constraint, answer_a_constraint)) + ' - Answer A: A and C both serve on the X committee.')
+
+# Answer B: A and E both serve on the Y committee
+answer_b_constraint = lambda sol: sol['A'] == 2 and sol['E'] == 2
+print(str(answer_checker(question_constraint, answer_b_constraint)) + ' - Answer B: A and E both serve on the Y committee.')
+
+# Answer C: B and G both serve on the X committee
+answer_c_constraint = lambda sol: sol['B'] == 1 and sol['G'] == 1
+print(str(answer_checker(question_constraint, answer_c_constraint)) + ' - Answer C: B and G both serve on the X committee.')
+
+# Answer D: C and E both serve on the Y committee
+answer_d_constraint = lambda sol: sol['C'] == 2 and sol['E'] == 2
+print(str(answer_checker(question_constraint, answer_d_constraint)) + ' - Answer D: C and E both serve on the Y committee.')
+
+# Answer E: G and E both serve on the X committee
+answer_e_constraint = lambda sol: sol['G'] == 1 and sol['E'] == 1
+print(str(answer_checker(question_constraint, answer_e_constraint)) + ' - Answer E: G and E both serve on the X committee.')
