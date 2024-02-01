@@ -1,0 +1,164 @@
+from constraint import Problem
+
+# Step 3. Create a new `Problem` instance. This will be the object where you define your variables and constraints.
+problem = Problem()
+
+# Step 4. Identify the LSAT game type and explain why.
+# This game type is an ordering game because the participants are breeds of kittens and puppies being put into a specific order.
+
+# Step 5. Identify and define the variables of the problem.
+# Define the variables
+# In this case, the variables are the breeds of kittens and puppies.
+kitten_breeds = ['Himalayan', 'Manx', 'Siamese']
+puppy_breeds = ['Greyhound', 'Newfoundland', 'Rottweiler']
+
+# Define the domains
+# Define the domains (combinations of kitten and puppy breeds for each day)
+# Each domain is a tuple (kitten_breed, puppy_breed)
+breed_combinations = [(k, p) for k in kitten_breeds for p in puppy_breeds]
+
+#Step 6. # Identify any domains that require ordering and create a dictionary mapping numbers to the objects in the domain.
+# In this case the days are already ordered, so we will not create a dictionary mapping numbers to the days.
+
+# Step 7. Add variables and domains to the problem
+ # Add variables (one for each day) with their domains
+for day in range(1, 8):
+    problem.addVariable(f'day_{day}', breed_combinations)
+    
+# Step 8. Add the orignal constraints. Each rule translates to a constraint in your problem.
+
+#Rule 1: exactly one of three breeds of kitten—Himalayan, Manx, Siamese—and exactly one of three breeds of puppy—Greyhound, Newfoundland, Rottweiler.
+# This rule is already satisfied by the domains we defined above.
+    
+#Rule 2: Greyhounds are featured on day 1.
+# Add a constraint that ensures that Greyhounds are featured on day 1.
+problem.addConstraint(lambda day1: day1[1] == 'Greyhound', ('day_1',))
+
+#Rule 3: No breed is featured on any two consecutive days.
+# Add a constraint that ensures that no breed is featured on any two consecutive days.
+def consecutive_days_constraint(day1, day2):
+        return day1[0] != day2[0] and day1[1] != day2[1]
+# Add the constraint to the problem
+for day in range(1, 7):
+    problem.addConstraint(consecutive_days_constraint, (f'day_{day}', f'day_{day + 1}'))
+    
+#Rule 4: Any breed featured on day 1 is not featured on day 7. 
+# Add a constraint that ensures that any breed featured on day 1 is not featured on day 7.
+def not_repeat_first_last_day(day1, day7):
+        return day1[0] != day7[0] and day1[1] != day7[1]
+    
+# Add the constraint to the problem
+problem.addConstraint(not_repeat_first_last_day, ('day_1', 'day_7'))
+
+#Rule 5: Himalayans are featured on exactly three days, but not on day 1.
+# Add a constraint that ensures that Himalayans are featured on exactly three days, but not on day 1.
+def himalayan_count_constraint(*days):
+        himalayan_count = sum(day[0] == 'Himalayan' for day in days)
+        return himalayan_count == 3
+
+problem.addConstraint(himalayan_count_constraint, [f'day_{day}' for day in range(2, 8)])
+
+ # Rule 6: Rottweilers are not featured on day 7, nor on any day that features Himalayans
+def rottweiler_constraints(day7, *days):
+    # Check if Rottweiler is not on day 7
+        if day7[1] == 'Rottweiler':
+            return False
+        # Check if Rottweiler is not on the same day as Himalayan
+        for day in days:
+            if day[0] == 'Himalayan' and day[1] == 'Rottweiler':
+                return False
+        return True
+# Add the constraint to the problem
+problem.addConstraint(rottweiler_constraints, ['day_7'] + [f'day_{day}' for day in range(1, 8)])
+
+# Step 9. Determine all possible solutions that exist after applying the original rules stated above. These rules and constraints will be assumed and imposed on the answer choices below,
+
+    
+solutions = problem.getSolutions()
+#print(solutions)
+#print("The possible solutions are: " + str(solutions))
+#count the number of solutions
+print("problem_200010_3-G_4_19_E The number of possible solutions is: " + str(len(solutions)))
+
+# Step 10: Determine if each answer choice is possible by adding the question constraint to the answer choice constraint and seeing if the answer choice is satisfied by the possible solutions.
+
+# Answer A. Himalayan, Manx, Siamese, Himalayan, Manx, Himalayan, Siamese
+#The function assumes that Himalayan, Manx, Siamese, Himalayan, Manx, Himalayan, Siamese are performed in that order and checks to see if it is possible for them to be performed in that order.
+def answer_a():
+    for solution in solutions:
+        if (solution['day_1'][0] == 'Himalayan' and
+            solution['day_2'][0] == 'Manx' and
+            solution['day_3'][0] == 'Siamese' and
+            solution['day_4'][0] == 'Himalayan' and
+            solution['day_5'][0] == 'Manx' and
+            solution['day_6'][0] == 'Himalayan' and
+            solution['day_7'][0] == 'Siamese'):
+            return True
+    return False
+#print(answer_a())
+print(str(answer_a()) + ' - Answer A: Himalayan, Manx, Siamese, Himalayan, Manx, Himalayan, Siamese.')
+
+
+# Answer B. Manx, Himalayan, Siamese, Himalayan, Manx Himalayan, Manx
+# The function assumes that Manx, Himalayan, Siamese, Himalayan, Manx Himalayan, Manx are performed in that order and checks to see if it is possible for them to be performed in that order.
+def answer_b():
+    for solution in solutions:
+        if (solution['day_1'][0] == 'Manx' and
+            solution['day_2'][0] == 'Himalayan' and
+            solution['day_3'][0] == 'Siamese' and
+            solution['day_4'][0] == 'Himalayan' and
+            solution['day_5'][0] == 'Manx' and
+            solution['day_6'][0] == 'Himalayan' and
+            solution['day_7'][0] == 'Manx'):
+            return True
+    return False
+#print(answer_b())
+print(str(answer_b()) + ' - Answer B: Manx, Himalayan, Siamese, Himalayan, Manx Himalayan, Manx.')
+
+# Answer C. Manx, Himalayan, Manx, Himalayan, Siamese, Manx, Siamese
+#The function assumes that Manx, Himalayan, Manx, Himalayan, Siamese, Manx, Siamese are performed in that order and checks to see if it is possible for them to be performed in that order.
+def answer_c():
+    for solution in solutions:
+        if (solution['day_1'][0] == 'Manx' and
+            solution['day_2'][0] == 'Himalayan' and
+            solution['day_3'][0] == 'Manx' and
+            solution['day_4'][0] == 'Himalayan' and
+            solution['day_5'][0] == 'Siamese' and
+            solution['day_6'][0] == 'Manx' and
+            solution['day_7'][0] == 'Siamese'):
+            return True
+    return False
+#print(answer_c())
+print(str(answer_c()) + ' - Answer C: Manx, Himalayan, Manx, Himalayan, Siamese, Manx, Siamese.')
+
+# Answer D. Siamese, Himalayan, Manx, Himalayan, Siamese, Siamese, Himalayan
+#The function assumes that Siamese, Himalayan, Manx, Himalayan, Siamese, Siamese, Himalayan are performed in that order and checks to see if it is possible for them to be performed in that order.
+def answer_d():
+    for solution in solutions:
+        if (solution['day_1'][0] == 'Siamese' and
+            solution['day_2'][0] == 'Himalayan' and
+            solution['day_3'][0] == 'Manx' and
+            solution['day_4'][0] == 'Himalayan' and
+            solution['day_5'][0] == 'Siamese' and
+            solution['day_6'][0] == 'Siamese' and
+            solution['day_7'][0] == 'Himalayan'):
+            return True
+    return False
+#print(answer_d())
+print(str(answer_d()) + ' - Answer D: Siamese, Himalayan, Manx, Himalayan, Siamese, Siamese, Himalayan.')
+
+# Answer E. Siamese, Himalayan, Siamese, Himalayan, Manx, Siamese, Himalayan
+#The function assumes that Siamese, Himalayan, Siamese, Himalayan, Manx, Siamese, Himalayan are performed in that order and checks to see if it is possible for them to be performed in that order.
+def answer_e():
+    for solution in solutions:
+        if (solution['day_1'][0] == 'Siamese' and
+            solution['day_2'][0] == 'Himalayan' and
+            solution['day_3'][0] == 'Siamese' and
+            solution['day_4'][0] == 'Himalayan' and
+            solution['day_5'][0] == 'Manx' and
+            solution['day_6'][0] == 'Siamese' and
+            solution['day_7'][0] == 'Himalayan'):
+            return True
+    return False
+#print(answer_e())
+print(str(answer_e()) + ' - Answer E: Siamese, Himalayan, Siamese, Himalayan, Manx, Siamese, Himalayan.')
