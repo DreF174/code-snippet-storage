@@ -1,0 +1,64 @@
+from constraint import *
+
+# Step 1: Create a new Problem instance
+problem = Problem()
+
+# Step 2: Identify and define the variables of the problem
+students = ['Fernando', 'Ginny', 'Hakim', 'Juanita', 'Kevin']
+
+# Step 3: Add variables and domains to the problem
+for student in students:
+    problem.addVariable(student, list(range(1, 6)))  # Positions are 1 to 5
+
+# Step 4: Add the original constraints
+# Rule 1: Each student performs in a different order
+problem.addConstraint(AllDifferentConstraint())
+
+# Rule 2: Ginny performs earlier than Fernando
+problem.addConstraint(lambda g, f: g < f, ('Ginny', 'Fernando'))
+
+# Rule 3: Kevin performs earlier than Hakim and Juanita
+problem.addConstraint(lambda k, h, j: k < h and k < j, ('Kevin', 'Hakim', 'Juanita'))
+
+# Rule 4: Hakim performs either immediately before or immediately after Fernando
+problem.addConstraint(lambda h, f: abs(h - f) == 1, ('Hakim', 'Fernando'))
+
+# Step 5: Determine all possible solutions
+solutions = problem.getSolutions()
+
+# Step 6: Answer the question
+def answer_a(solutions):
+    for solution in solutions:
+        if solution['Ginny'] == 1 and solution['Fernando'] == 2 and solution['Hakim'] == 3 and solution['Kevin'] == 4 and solution['Juanita'] == 5:
+            return True
+    return False
+
+def answer_b(solutions):
+    for solution in solutions:
+        if solution['Ginny'] == 1 and solution['Juanita'] == 2 and solution['Kevin'] == 3 and solution['Hakim'] == 4 and solution['Fernando'] == 5:
+            return True
+    return False
+
+def answer_c(solutions):
+    for solution in solutions:
+        if solution['Ginny'] == 1 and solution['Kevin'] == 2 and solution['Hakim'] == 3 and solution['Juanita'] == 4 and solution['Fernando'] == 5:
+            return True
+    return False
+
+def answer_d(solutions):
+    for solution in solutions:
+        if solution['Kevin'] == 1 and solution['Ginny'] == 2 and solution['Juanita'] == 3 and solution['Fernando'] == 4 and solution['Hakim'] == 5:
+            return True
+    return False
+
+def answer_e(solutions):
+    for solution in solutions:
+        if solution['Kevin'] == 1 and solution['Juanita'] == 2 and solution['Fernando'] == 3 and solution['Hakim'] == 4 and solution['Ginny'] == 5:
+            return True
+    return False
+
+print(str(answer_a(solutions)) + ' - Answer A: Ginny, Fernando, Hakim, Kevin, Juanita')
+print(str(answer_b(solutions)) + ' - Answer B: Ginny, Juanita, Kevin, Hakim, Fernando')
+print(str(answer_c(solutions)) + ' - Answer C: Ginny, Kevin, Hakim, Juanita, Fernando')
+print(str(answer_d(solutions)) + ' - Answer D: Kevin, Ginny, Juanita, Fernando, Hakim')
+print(str(answer_e(solutions)) + ' - Answer E: Kevin, Juanita, Fernando, Hakim, Ginny')
