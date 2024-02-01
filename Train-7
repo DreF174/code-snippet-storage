@@ -1,0 +1,164 @@
+from constraint import Problem
+
+# Step 1. Create a new `Problem` instance. This will be the object where you define your variables and constraints.
+problem = Problem()
+
+# Step 2. Identify the LSAT game type and explain why.
+# This game type is an assignment game because the participants are students being assigned days and times to give oral reports given certain rules and constraints.    
+
+# Step 3. Identify and define the variables of the problem. In this case, the variables are the students, and their domains are the days and times they can give oral reports.
+# Define the variables
+students = ['George', 'Helen', 'Irving', 'Kyle', 'Lenore', 'Nina', 'Olivia', 'Robert']
+# Define the domains
+days_and_times = ['Monday morning', 'Monday afternoon', 'Tuesday morning', 'Tuesday afternoon', 'Wednesday morning', 'Wednesday afternoon']
+
+#Step 4. # Identify any domains that require ordering and create a dictionary mapping numbers to the objects in the domain.
+# In this case, the days and times need to be ordered, so we will create a dictionary mapping numbers to the days and times.
+# Create a dictionary mapping the days and times to numbers
+days_and_times = {1: 'Monday morning', 2: 'Monday afternoon', 3: 'Tuesday morning', 4: 'Tuesday afternoon', 5: 'Wednesday morning', 6: 'Wednesday afternoon'}
+
+# Step 5. Add variables and domains to the problem
+for student in students:
+    problem.addVariable(student, days_and_times)
+    
+# Step 6. Add the orignal constraints. Each rule translates to a constraint in your problem.
+
+#Rule 1: Exactly six students will give individual oral reports during three consecutive days—Monday, Tuesday, and Wednesday. 
+#problem.addConstraint(AllDifferentConstraint(), students) cannot be used because there is a mismatch between the number of variables (8 students) and the number of domains (6 time slots). Using it will result in zero possible solutions.
+
+#Rule 2: Exactly two reports will be given each day—one in the morning and one in the afternoon.
+# This rule can be restated as: A report must be given at each of the 6 time slots. Therefore no time slot can be empty.
+
+# A report must be given on Monday morning by one of the students.
+problem.addConstraint(SomeInSetConstraint([1]), ('George', 'Helen', 'Irving', 'Kyle', 'Lenore', 'Nina', 'Olivia', 'Robert'))
+
+# A report must be given on Monday afternoon by one of the students.
+problem.addConstraint(SomeInSetConstraint([2]), ('George', 'Helen', 'Irving', 'Kyle', 'Lenore', 'Nina', 'Olivia', 'Robert'))
+
+# A report must be given on Tuesday morning by one of the students.
+problem.addConstraint(SomeInSetConstraint([3]), ('George', 'Helen', 'Irving', 'Kyle', 'Lenore', 'Nina', 'Olivia', 'Robert'))
+
+# A report must be given on Tuesday afternoon by one of the students.
+problem.addConstraint(SomeInSetConstraint([4]), ('George', 'Helen', 'Irving', 'Kyle', 'Lenore', 'Nina', 'Olivia', 'Robert'))
+
+# A report must be given on Wednesday morning by one of the students.
+problem.addConstraint(SomeInSetConstraint([5]), ('George', 'Helen', 'Irving', 'Kyle', 'Lenore', 'Nina', 'Olivia', 'Robert'))
+
+# A report must be given on Wednesday afternoon by one of the students.
+problem.addConstraint(SomeInSetConstraint([6]), ('George', 'Helen', 'Irving', 'Kyle', 'Lenore', 'Nina', 'Olivia', 'Robert'))
+
+#Rule 3: Tuesday is the only day on which George can give a report.
+# Tuesday morning and Tuesday afternoon are positions where George can give a report.
+problem.addConstraint(lambda g: g == 3 or g == 4, ('George',))
+
+#Rule 4: Neither Olivia nor Robert can give an afternoon report.
+# Olivia cannot give an afternoon report on Monday or Tuesday or Wednesday.
+problem.addConstraint(lambda o: o != 2 and o != 4 and o != 6, ('Olivia',))
+# Robert cannot give an afternoon report on Monday or Tuesday or Wednesday.
+problem.addConstraint(lambda r: r != 2 and r != 4 and r != 6, ('Robert',))
+
+#Rule 5: If Nina gives a report, then on the next day Helen and Irving must both give reports, unless Nina's report is given on Wednesday.
+# Create a rule that assumes the triggering condition has been satisified by Nina reporting on Monday or Tuesday, but not Wednesday, and then checks to see if Helen and Irving give reports on the next day.
+def nina_constraint(nina, helen, irving):
+    # If Nina gives a report on Monday
+    if nina in [1,2]:
+        # Then Helen and Irving must both give reports the next day, on Tuesday morning or Tuesday afternoon.
+        if helen not in [3,4] or irving not in [3,4]:
+            return False
+    # If Nina gives a report on Tuesday
+    if nina in [3, 4]:
+        # Helen and Irving must both give reports the next day, on Wednesday morning or Wednesday afternoon.
+        if helen not in [5,6] or irving not in [5,6]:
+            return False
+    return True
+
+problem.addConstraint(nina_constraint, ('Nina', 'Helen', 'Irving'))
+
+
+# Step 7. Determine all possible solutions that exist after applying the original rules stated above. These rules and constraints will be assumed and imposed on the answer choices below
+solutions = problem.getSolutions()
+#print(solutions)
+#print("The possible solutions are: " + str(solutions))
+#count the number of solutions
+print("problem_200010_3-G_1_3_B - the number of possible solutions is: " + str(len(solutions)))
+
+# Step 8: Determine if each answer choice is possible by adding the question constraint to the answer choice constraint and seeing if the answer choice is satisfied by the possible solutions.
+
+# Answer A. If George and Lenore give reports on the same day as each other, must they give their reports on Wednesday? 
+# The function for Answer A is designed to incorporate the question rule and iterate over a collection called solutions. The question in this problem contains the constraint/rule that if two students give reports on the same day as each other, they must give reports on Wednesday. The function assumes that George and Lenore give reports on the same day as each other and checks to see if it is possible for them for them to give reports together on any day other than Wednesday. If the function iterates over the entire solutions collection and finds any order where George and Lenore give reports together on any day other than Wednesday, it will return False.
+def answer_a():
+    for solution in solutions:
+        # Check to see if George and Lenore give reports on any day other than Wednesday.
+        
+        # check to see if George and Lenore give reports on monday morning or monday afternoon. 
+        if solution['George'] in [1,2] and solution['Lenore'] in [1,2]:
+            return False
+        # check to see if George and Lenore give reports on tuesday morning or tuesday afternoon.
+        if solution['George'] in [3,4] and solution['Lenore'] in [3,4]:
+            return False
+    #print("Answer A: George and Lenore. " + str(answer_a()))
+    return True
+print(str(answer_a()) + ' - Answer A: George and Lenore.')
+
+# Answer B. If Helen and Nina give reports on the same day as each other, must they give their reports on Wednesday?
+#The function for Answer B is designed to incorporate the question rule and iterate over a collection called solutions. The question in this problem contains the constraint/rule that if two students give reports on the same day as each other, they must give reports on Wednesday. The function assumes that Helen and Nina give reports on the same day as each other and checks to see if it is possible for them for them to give reports together on any day other than Wednesday. If the function iterates over the entire solutions collection and finds any order where Helen and Nina give reports together on any day other than Wednesday, it will return False.
+def answer_b():
+    for solution in solutions:
+        # Check to see if Helen and Nina give reports on any day other than Wednesday.
+        
+        # check to see if Helen and Nina give reports on monday morning or monday afternoon. 
+        if solution['Helen'] in [1,2] and solution['Nina'] in [1,2]:
+            return False
+        # check to see if Helen and Nina give reports on tuesday morning or tuesday afternoon.
+        if solution['Helen'] in [3,4] and solution['Nina'] in [3,4]:
+            return False
+    #print("Answer B: Helen and Nina. " + str(answer_b()))
+    return True
+print(str(answer_b()) + ' - Answer B: Helen and Nina.')
+
+# Answer C. If Irving and Robert give reports on the same day as each other, must they give their reports on Wednesday?
+#The function for Answer C is designed to incorporate the question rule and iterate over a collection called solutions. The question in this problem contains the constraint/rule that if two students give reports on the same day as each other, they must give reports on Wednesday. The function assumes that Irving and Robert give reports on the same day as each other and checks to see if it is possible for them for them to give reports together on any day other than Wednesday. If the function iterates over the entire solutions collection and finds any order where Irving and Robert give reports together on any day other than Wednesday, it will return False.
+def answer_c():
+    for solution in solutions:
+        # Check to see if Irving and Robert give reports on any day other than Wednesday.
+        
+        # check to see if Irving and Robert give reports on monday morning or monday afternoon. 
+        if solution['Irving'] in [1,2] and solution['Robert'] in [1,2]:
+            return False
+        # check to see if Irving and Robert give reports on tuesday morning or tuesday afternoon.
+        if solution['Irving'] in [3,4] and solution['Robert'] in [3,4]:
+            return False
+    #print("Answer C: Irving and Robert. " + str(answer_c()))
+    return True
+print(str(answer_c()) + ' - Answer C: Irving and Robert.')
+
+# Answer D. If Kyle and Nina give reports on the same day as each other, must they give their reports on Wednesday?
+#The function for Answer D is designed to incorporate the question rule and iterate over a collection called solutions. The question in this problem contains the constraint/rule that if two students give reports on the same day as each other, they must give reports on Wednesday. The function assumes that Kyle and Nina give reports on the same day as each other and checks to see if it is possible for them for them to give reports together on any day other than Wednesday. If the function iterates over the entire solutions collection and finds any order where Kyle and Nina give reports together on any day other than Wednesday, it will return False.
+def answer_d():
+    for solution in solutions:
+        # Check to see if Kyle and Nina give reports on any day other than Wednesday.
+        
+        # check to see if Kyle and Nina give reports on monday morning or monday afternoon. 
+        if solution['Kyle'] in [1,2] and solution['Nina'] in [1,2]:
+            return False
+        # check to see if Kyle and Nina give reports on tuesday morning or tuesday afternoon.
+        if solution['Kyle'] in [3,4] and solution['Nina'] in [3,4]:
+            return False
+    #print("Answer D: Kyle and Nina. " + str(answer_d()))
+    return True
+print(str(answer_d()) + ' - Answer D: Kyle and Nina.')
+
+# Answer E. If Olivia and Kyle give reports on the same day as each other, must they give their reports on Wednesday?
+#The function for Answer E is designed to incorporate the question rule and iterate over a collection called solutions. The question in this problem contains the constraint/rule that if two students give reports on the same day as each other, they must give reports on Wednesday. The function assumes that Olivia and Kyle give reports on the same day as each other and checks to see if it is possible for them for them to give reports together on any day other than Wednesday. If the function iterates over the entire solutions collection and finds any order where Olivia and Kyle give reports together on any day other than Wednesday, it will return False.
+def answer_e():
+    for solution in solutions:
+        # Check to see if Olivia and Kyle give reports on any day other than Wednesday.
+        
+        # check to see if Olivia and Kyle give reports on monday morning or monday afternoon. 
+        if solution['Olivia'] in [1,2] and solution['Kyle'] in [1,2]:
+            return False
+        # check to see if Olivia and Kyle give reports on tuesday morning or tuesday afternoon.
+        if solution['Olivia'] in [3,4] and solution['Kyle'] in [3,4]:
+            return False
+    return True
+print(str(answer_e()) + ' - Answer E: Olivia and Kyle.')
