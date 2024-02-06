@@ -1,10 +1,8 @@
-Use this template to assist you with the creation of the python constraint code:
-
+Read this following template and use it to assist you into turning the previous passage you were given into logical code. You must change the variables and logic from this template to match the previous passage you were given.
+Here is the template:
 #Before starting, import the `constraint` python module
 import constraint
-
 from constraint import *
-
 # Context: On each of exactly seven consecutive days (day 1 though day 7), a pet shop features exactly one of three breeds of kitten—Himalayan, Manx, Siamese—and exactly one of three breeds of puppy—Greyhound, Newfoundland, Rottweiler. The following conditions must apply: Greyhounds are featured on day 1. No breed is featured on any two consecutive days. Any breed featured on day 1 is not featured on day 7. Himalayans are featured on exactly three days, but not on day 1. Rottweilers are not featured on day 7, nor on any day that features Himalayans.	Which one of the following could be the order in which the breeds of kitten are featured in the pet shop, from day 1 though day 7?	Himalayan, Manx, Siamese, Himalayan, Manx, Himalayan, Siamese	Manx, Himalayan, Siamese, Himalayan, Manx Himalayan, Manx	Manx, Himalayan, Manx, Himalayan, Siamese, Manx, Siamese	Siamese, Himalayan, Manx, Himalayan, Siamese, Siamese, Himalayan	Siamese, Himalayan, Siamese, Himalayan, Manx, Siamese, Himalayan
 
 # Question: Identify the question: Which one of the following could be the order in which the breeds of kitten are featured in the pet shop, from day 1 though day 7?
