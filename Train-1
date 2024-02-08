@@ -1,3 +1,19 @@
+# Task: Solve the LSAT problems below using Python:
+
+# There are 3 basic types of LSAT logic games: ordering games, grouping games, and assignment games.
+# Ordering games are to order participants based on given facts and rules.
+# Grouping games are to separate participants into groups with given facts and rules.
+# Assignment games are to assign characteristics to the participants with given rules, like assigning schedules for people.
+# Constraint satisfaction problems in Python are very adept at LSAT logic.
+# Constraint satisfaction problems are a type of problem that require you to assign values to variables in order to satisfy a set of constraints.
+# Variables are the objects that you are assigning values to. 
+# Domains are the possible values that can be assigned to a variable.
+
+# The following are step-by-step examples of how to translate LSAT logic games into constraint satisfaction problems in Python.
+
+
+#Before starting, import the `constraint` python module
+
 from constraint import Problem
 
 # Step 1: Create a new Problem instance
