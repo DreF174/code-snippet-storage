@@ -1,11 +1,35 @@
 Read this following template and use it to assist you into turning the previous passage you were given into logical code. You must change the variables and logic from this template to match the previous passage you were given.
-Here is the template:
+
+# Task: Solve the LSAT problems below using Python:
+
+# There are 3 basic types of LSAT logic games: ordering games, grouping games, and assignment games.
+# Ordering games are to order participants based on given facts and rules.
+# Grouping games are to separate participants into groups with given facts and rules.
+# Assignment games are to assign characteristics to the participants with given rules, like assigning schedules for people.
+# Constraint satisfaction problems in Python are very adept at LSAT logic.
+# Constraint satisfaction problems are a type of problem that require you to assign values to variables in order to satisfy a set of constraints.
+# Variables are the objects that you are assigning values to. 
+# Domains are the possible values that can be assigned to a variable.
+
+# The following are step-by-step examples of how to translate LSAT logic games into constraint satisfaction problems in Python.
+
+
 #Before starting, import the `constraint` python module
 import constraint
+
 from constraint import *
+
+
+### Problem #1:
+
+#Create a constraint satisfaction problem for the LSAT logic game below following the 7 steps and format from the instruction example above. Make sure you label each step and comment your code. Make sure each answer has its own function and print statement as shown in the example. 
+
+
 # Context: On each of exactly seven consecutive days (day 1 though day 7), a pet shop features exactly one of three breeds of kitten—Himalayan, Manx, Siamese—and exactly one of three breeds of puppy—Greyhound, Newfoundland, Rottweiler. The following conditions must apply: Greyhounds are featured on day 1. No breed is featured on any two consecutive days. Any breed featured on day 1 is not featured on day 7. Himalayans are featured on exactly three days, but not on day 1. Rottweilers are not featured on day 7, nor on any day that features Himalayans.	Which one of the following could be the order in which the breeds of kitten are featured in the pet shop, from day 1 though day 7?	Himalayan, Manx, Siamese, Himalayan, Manx, Himalayan, Siamese	Manx, Himalayan, Siamese, Himalayan, Manx Himalayan, Manx	Manx, Himalayan, Manx, Himalayan, Siamese, Manx, Siamese	Siamese, Himalayan, Manx, Himalayan, Siamese, Siamese, Himalayan	Siamese, Himalayan, Siamese, Himalayan, Manx, Siamese, Himalayan
 
 # Question: Identify the question: Which one of the following could be the order in which the breeds of kitten are featured in the pet shop, from day 1 though day 7?
+
+#Ideal: E
 
 ### Python Code ###
 
