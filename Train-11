@@ -1,0 +1,57 @@
+from constraint import Problem, AllDifferentConstraint
+
+# Step 1: Create a new Problem instance
+problem = Problem()
+
+# Step 2: Identify and define the variables of the problem
+students = ['George', 'Helen', 'Irving', 'Kyle', 'Lenore', 'Nina', 'Olivia', 'Robert']
+# Define the domains
+days_and_times = list(range(1, 7))  # 1: 'Monday morning', 2: 'Monday afternoon', etc.
+
+# Step 3: Add variables and domains to the problem
+for student in students:
+    problem.addVariable(student, days_and_times)
+
+# Step 4: Add the original constraints
+# Rule 3: Tuesday is the only day on which George can give a report.
+problem.addConstraint(lambda g: g in [3, 4], ('George',))
+
+# Rule 4: Neither Olivia nor Robert can give an afternoon report.
+problem.addConstraint(lambda o: o not in [2, 4, 6], ('Olivia',))
+problem.addConstraint(lambda r: r not in [2, 4, 6], ('Robert',))
+
+# Rule 5: If Nina gives a report, then on the next day Helen and Irving must both give reports, unless Nina's report is given on Wednesday.
+def nina_constraint(n, h, i):
+    if n in [1, 2]:  # Nina reports on Monday
+        return h in [3, 4] and i in [3, 4]  # Helen and Irving must report on Tuesday
+    if n in [3, 4]:  # Nina reports on Tuesday
+        return h in [5, 6] and i in [5, 6]  # Helen and Irving must report on Wednesday
+    return True
+
+problem.addConstraint(nina_constraint, ('Nina', 'Helen', 'Irving'))
+
+# Add AllDifferentConstraint to ensure each student reports at a different time
+problem.addConstraint(AllDifferentConstraint(), students)
+
+# Step 5: Determine all possible solutions
+solutions = problem.getSolutions()
+
+# Step 6: Determine if each answer choice is possible
+def answer_checker(solution, schedule):
+    # Convert the schedule to the corresponding numbers
+    schedule_numbers = [(students.index(name) + 1) * 2 - (1 if part == 'morning' else 0) for name, part in schedule]
+    return all(solution[students[i]] == schedule_numbers[i] for i in range(len(students)))
+
+# Step 7: Define the schedules for each answer
+schedule_a = [('Helen', 'morning'), ('Robert', 'afternoon'), ('Olivia', 'morning'), ('Irving', 'afternoon'), ('Lenore', 'morning'), ('Kyle', 'afternoon')]
+schedule_b = [('Irving', 'morning'), ('Olivia', 'afternoon'), ('Helen', 'morning'), ('Kyle', 'afternoon'), ('Nina', 'morning'), ('Lenore', 'afternoon')]
+schedule_c = [('Lenore', 'morning'), ('Helen', 'afternoon'), ('George', 'morning'), ('Kyle', 'afternoon'), ('Robert', 'morning'), ('Irving', 'afternoon')]
+schedule_d = [('Nina', 'morning'), ('Helen', 'afternoon'), ('Robert', 'morning'), ('Irving', 'afternoon'), ('Olivia', 'morning'), ('Lenore', 'afternoon')]
+schedule_e = [('Olivia', 'morning'), ('Nina', 'afternoon'), ('Irving', 'morning'), ('Helen', 'afternoon'), ('Kyle', 'morning'), ('George', 'afternoon')]
+
+# Step 8: Check each answer
+print(str(any(answer_checker(sol, schedule_a) for sol in solutions)) + ' - Answer A: Mon. morning: Helen; Mon. afternoon: Robert Tues. morning: Olivia; Tues. afternoon: Irving Wed. morning: Lenore; Wed. afternoon: Kyle.')
+print(str(any(answer_checker(sol, schedule_b) for sol in solutions)) + ' - Answer B: Mon. morning: Irving; Mon. afternoon: Olivia Tues. morning: Helen; Tues. afternoon: Kyle Wed. morning: Nina; Wed. afternoon: Lenore.')
+print(str(any(answer_checker(sol, schedule_c) for sol in solutions)) + ' - Answer C: Mon. morning: Lenore; Mon. afternoon: Helen Tues. morning: George; Tues. afternoon: Kyle Wed. morning: Robert; Wed. afternoon: Irving.')
+print(str(any(answer_checker(sol, schedule_d) for sol in solutions)) + ' - Answer D: Mon. morning: Nina; Mon. afternoon: Helen Tues. morning: Robert; Tues. afternoon: Irving Wed. morning: Olivia; Wed. afternoon: Lenore.')
+print(str(any(answer_checker(sol, schedule_e) for sol in solutions)) + ' - Answer E: Mon. morning: Olivia; Mon. afternoon: Nina Tues. morning: Irving; Tues. afternoon: Helen Wed. morning: Kyle; Wed. afternoon: George.')
