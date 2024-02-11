@@ -1,0 +1,148 @@
+# Step 1. Create a new `Problem` instance. This will be the object where you define your variables and constraints.
+problem = Problem()
+
+# Step 2. Identify the LSAT game type and explain why.
+# This game type is a grouping game because the participants are riders being separated into groups of bicycles given certain rules and constraints.
+
+# Step 3. Identify and define the variables.
+#The variables are the riders delimited by the day they test the bicycle.
+riders = ['Reynaldo_Day1', 'Seamus_Day1', 'Theresa_Day1', 'Yuki_Day1', 'Reynaldo_Day2', 'Seamus_Day2', 'Theresa_Day2', 'Yuki_Day2']
+#The domains are the bicycles.
+bikes = ['F', 'G', 'H', 'J']
+
+#Step 4. # Identify any domains that require ordering and create a dictionary mapping numbers to the objects in the domain.
+# In this case, the question is a simple grouping game and the bicycles do not need to be ordered, so we will not create a dictionary mapping numbers to the bicycles.
+
+# Step 5. Add variables and domains to the problem
+for rider in riders:
+    problem.addVariable(rider, bikes)
+    
+# Step 6. Add the orignal constraints, including any contained in the question. Each rule translates to a constraint in your problem.
+
+#Rule 1: Each rider will then test a different one of the bicycles on the second day.
+def rule_1_constraint(reynaldo_day1, seamus_day1, theresa_day1, yuki_day1, reynaldo_day2, seamus_day2, theresa_day2, yuki_day2):
+    if reynaldo_day1 == reynaldo_day2:
+        return False
+    if seamus_day1 == seamus_day2:
+        return False
+    if theresa_day1 == theresa_day2:
+        return False
+    if yuki_day1 == yuki_day2:
+        return False
+    return True
+problem.addConstraint(rule_1_constraint, ('Reynaldo_Day1', 'Seamus_Day1', 'Theresa_Day1', 'Yuki_Day1', 'Reynaldo_Day2', 'Seamus_Day2', 'Theresa_Day2', 'Yuki_Day2'))
+
+#Rule 2: Each rider tests only one bicycle per day, and all four bicycles are tested each day.
+
+#all four bicycles are tested each day.
+def rule_2_constraint(*riders):
+    # Convert the rides to 1 if equal to F and otherwise 0
+    F_rides = sum([1 if rider == 'F' else 0 for rider in riders])
+    if F_rides != 2:
+        return False
+    # Convert the rides to 1 if equal to G and otherwise 0
+    G_rides = sum([1 if rider == 'G' else 0 for rider in riders])
+    if G_rides != 2:
+        return False
+    # Convert the rides to 1 if equal to H and otherwise 0
+    H_rides = sum([1 if rider == 'H' else 0 for rider in riders])
+    if H_rides != 2:
+        return False
+    # Convert the rides to 1 if equal to J and otherwise 0
+    J_rides = sum([1 if rider == 'J' else 0 for rider in riders])
+    if J_rides != 2:
+        return False
+    return True
+problem.addConstraint(rule_2_constraint, riders)
+   
+
+#Rule 3: Reynaldo cannot test F.
+def rule_3_constraint(reynaldo_day1, reynaldo_day2):
+    if reynaldo_day1 == 'F':
+        return False
+    if reynaldo_day2 == 'F':
+        return False
+    return True
+problem.addConstraint(rule_3_constraint, ('Reynaldo_Day1', 'Reynaldo_Day2'))
+
+#Rule 4: Yuki cannot test J.
+def rule_4_constraint(yuki_day1, yuki_day2):
+    if yuki_day1 == 'J':
+        return False
+    if yuki_day2 == 'J':
+        return False
+    return True
+problem.addConstraint(rule_4_constraint, ('Yuki_Day1', 'Yuki_Day2'))
+
+#Rule 5: Theresa must be one of the testers for H.
+def rule_5_constraint(theresa_day1, theresa_day2):
+    if theresa_day1 =='H' or theresa_day2 =='H':
+        return True
+    return False
+problem.addConstraint(rule_5_constraint, ('Theresa_Day1', 'Theresa_Day2'))
+
+#Rule 7: The bicycle that Yuki tests on the first day must be tested by Seamus on the second day.
+def rule_6_constraint(yuki_day1, seamus_day2):
+    if yuki_day1 == 'F' and seamus_day2 != 'F':
+        return False
+    if yuki_day1 == 'G' and seamus_day2 != 'G':
+        return False
+    if yuki_day1 == 'H' and seamus_day2 != 'H':
+        return False
+    if yuki_day1 == 'J' and seamus_day2 != 'J':
+        return False
+    return True
+problem.addConstraint(rule_6_constraint, ('Yuki_Day1', 'Seamus_Day2'))
+
+#Question Rule: The question rule does not contain any additional constraints.
+
+# Step 7. Determine all possible solutions that exist after applying the original rules stated above. These rules and constraints will be assumed and imposed on the answer choices below
+solutions = problem.getSolutions()
+#print first 10 solutions
+#print("The first 10 possible solutions are: " + str(solutions[:10]))
+#print("The possible solutions are: " + str(solutions))
+#count the number of solutions
+print("problem_201110_2-G_3_13_C The number of possible solutions is: " + str(len(solutions)))
+
+# Step 8: Determine which one of the following is a possible assignment of riders to bicycles, with the riders for each bicycle listed in the order in which they test the bicycle?
+# Add the constraint of each answer and determine if ANY of the solutions satisfy the additional constraint.
+
+# Answer A: F: Seamus, Reynaldo; G: Yuki, Seamus; H: Theresa, Yuki; J: Reynaldo, Theresa
+def answer_a():
+    for solution in solutions:
+        if solution['Seamus_Day1'] == 'F' and solution['Reynaldo_Day2'] == 'F'and solution['Yuki_Day1'] == 'G' and solution['Seamus_Day2'] == 'G' and solution['Theresa_Day1'] == 'H' and solution['Yuki_Day2'] == 'H' and solution['Reynaldo_Day1'] == 'J' and solution['Theresa_Day2'] == 'J':
+            return True
+    return False
+print(str(answer_a()) + ' - Answer A: F: Seamus, Reynaldo; G: Yuki, Seamus; H: Theresa, Yuki; J: Reynaldo, Theresa')
+
+# Answer B: F: Seamus, Yuki; G: Reynaldo, Theresa; H: Yuki, Seamus; J: Theresa, Reynaldo
+def answer_b():
+    for solution in solutions:
+        if solution['Seamus_Day1'] == 'F' and solution['Yuki_Day2'] == 'F'and solution['Reynaldo_Day1'] == 'G' and solution['Theresa_Day2'] == 'G' and solution['Yuki_Day1'] == 'H' and solution['Seamus_Day2'] == 'H' and solution['Theresa_Day1'] == 'J' and solution['Reynaldo_Day2'] == 'J':
+            return True
+    return False
+print(str(answer_b()) + ' - Answer B: F: Seamus, Yuki; G: Reynaldo, Theresa; H: Yuki, Seamus; J: Theresa, Reynaldo')
+
+# Answer C: F: Yuki, Seamus; G: Seamus, Reynaldo; H: Theresa, Yuki; J: Reynaldo, Theresa
+def answer_c():
+    for solution in solutions:
+        if solution['Yuki_Day1'] == 'F' and solution['Seamus_Day2'] == 'F'and solution['Seamus_Day1'] == 'G' and solution['Reynaldo_Day2'] == 'G' and solution['Theresa_Day1'] == 'H' and solution['Yuki_Day2'] == 'H' and solution['Reynaldo_Day1'] == 'J' and solution['Theresa_Day2'] == 'J':
+            return True
+    return False
+print(str(answer_c()) + ' - Answer C: F: Yuki, Seamus; G: Seamus, Reynaldo; H: Theresa, Yuki; J: Reynaldo, Theresa')
+
+# Answer D: F: Yuki, Seamus; G: Theresa, Reynaldo; H: Reynaldo, Theresa; J: Seamus, Yuki
+def answer_d():
+    for solution in solutions:
+        if solution['Yuki_Day1'] == 'F' and solution['Seamus_Day2'] == 'F'and solution['Theresa_Day1'] == 'G' and solution['Reynaldo_Day2'] == 'G' and solution['Reynaldo_Day1'] == 'H' and solution['Theresa_Day2'] == 'H' and solution['Seamus_Day1'] == 'J' and solution['Yuki_Day2'] == 'J':
+            return True
+    return False
+print(str(answer_d()) + ' - Answer D: F: Yuki, Seamus; G: Theresa, Reynaldo; H: Reynaldo, Theresa; J: Seamus, Yuki')
+
+# Answer E: F: Yuki, Theresa; G: Seamus, Yuki; H: Theresa, Reynaldo; J: Reynaldo, Seamus
+def answer_e():
+    for solution in solutions:
+        if solution['Yuki_Day1'] == 'F' and solution['Theresa_Day2'] == 'F'and solution['Seamus_Day1'] == 'G' and solution['Yuki_Day2'] == 'G' and solution['Theresa_Day1'] == 'H' and solution['Reynaldo_Day2'] == 'H' and solution['Reynaldo_Day1'] == 'J' and solution['Seamus_Day2'] == 'J':
+            return True
+    return False
+print(str(answer_e()) + ' - Answer E: F: Yuki, Theresa; G: Seamus, Yuki; H: Theresa, Reynaldo; J: Reynaldo, Seamus')
