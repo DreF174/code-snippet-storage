@@ -1,0 +1,118 @@
+# Step 1. Create a new `Problem` instance. This will be the object where you define your variables and constraints.
+problem = Problem()
+
+# Step 2. Identify the LSAT game type and explain why.
+# This game type is a grouping game because the participants are ambassadors being separated into groups of countries given certain rules and constraints.
+
+# Step 3. Identify and define the variables. In this case, the variables are the ambassadors, and their domains are the countries they can be assigned to.
+# Define the variables
+countries = ['Venezuela', 'Yemen', 'Zambia']
+# Define the domains
+ambassadors = ['Jaramillo', 'Kayne', 'Landon', 'Novetzke', 'Ong']
+
+#Step 4. # Identify any domains that require ordering and create a dictionary mapping numbers to the objects in the domain.
+# In this case, the question is a simple grouping game and the countries do not need to be ordered, so we will not create a dictionary mapping numbers to the countries.
+
+# Step 5. Add variables and domains to the problem
+for country in countries:
+    problem.addVariable(country, ambassadors)
+    
+# Step 6. Add the orignal constraints, including any contained in the question. Each rule translates to a constraint in your problem.
+
+#Rule 1: One ambassador will be assigned to each country, and no ambassador will be assigned to more than one country.
+problem.addConstraint(AllDifferentConstraint(), countries)
+
+#Rule 2: Either Kayne or Novetzke, but not both, is assigned to one of the ambassadorships.
+def rule_2_constraint(v, y, z):
+    # If both Kayne and Novetzke are assigned to one of the ambassadorships, return False
+    if v == 'Kayne' or y == 'Kayne' or z == 'Kayne':
+        if v == 'Novetzke' or y == 'Novetzke' or z == 'Novetzke':
+            return False
+    # If neither Kayne nor Novetzke are assigned to one of the ambassadorships, return False
+    if v == 'Novetzke' or y == 'Novetzke' or z == 'Novetzke':
+        if v == 'Kayne' or y == 'Kayne' or z == 'Kayne':
+            return False
+    return True
+problem.addConstraint(rule_2_constraint, ('Venezuela', 'Yemen', 'Zambia'))
+
+#Rule 3: If Jaramillo is assigned to one of the ambassadorships, then so is Kayne.
+def rule_3_constraint(v, y, z):
+    if v == 'Jaramillo' or y == 'Jaramillo' or z == 'Jaramillo':
+        if v != 'Kayne' and y != 'Kayne' and z != 'Kayne':
+            return False
+    return True
+problem.addConstraint(rule_3_constraint, ('Venezuela', 'Yemen', 'Zambia'))
+
+#Rule 4: If Ong is assigned as ambassador to Venezuela, Kayne is not assigned as ambassador to Yemen.
+def rule_4_constraint(v, y):
+    if v == 'Ong':
+        if y == 'Kayne':
+            return False
+    return True
+problem.addConstraint(rule_4_constraint, ('Venezuela', 'Yemen'))
+
+#Rule 5: If Landon is assigned to an ambassadorship, it is to Zambia.
+def rule_5_constraint(v, y, z):
+    if v == 'Landon' or y == 'Landon':
+            return False
+    return True
+problem.addConstraint(rule_5_constraint, ('Venezuela', 'Yemen', 'Zambia'))
+
+#Question Constraint/Rule: The question does not contain any additional constraints/rules.
+
+# Step 7. Determine all possible solutions that exist after applying the original rules stated above. These rules and constraints will be assumed and imposed on the answer choices below
+
+solutions=problem.getSolutions()
+#print(solutions)
+#print(solutions[-10:])
+#print("The possible solutions are: " + str(solutions))
+#count the number of solutions
+print("problem_201110_2-G_2_7_B The number of possible solutions is: " + str(len(solutions)))
+
+# Step 8: Determine which one of the following COULD be the assignment of the ambassadors?.
+# Add the constraint of each answer and determine if ANY of the solutions satisfy the additional constraint.
+
+# Answer A: Venezuela: Jaramillo Yemen: Ong Zambia: Novetzke
+def answer_a():
+    for solution in solutions:
+        if solution['Venezuela'] == 'Jaramillo' and solution['Yemen'] == 'Ong' and solution['Zambia'] == 'Novetzke':
+            return True
+    return False
+#print(answer_a())
+print(str(answer_a()) + ' - Answer A: Venezuela: Jaramillo Yemen: Ong Zambia: Novetzke.')
+
+# Answer B: Venezuela: Kayne Yemen: Jaramillo Zambia: Landon
+def answer_b():
+    for solution in solutions:
+        if solution['Venezuela'] == 'Kayne' and solution['Yemen'] == 'Jaramillo' and solution['Zambia'] == 'Landon':
+            return True
+    return False
+#print(answer_b())
+print(str(answer_b()) + ' - Answer B: Venezuela: Kayne Yemen: Jaramillo Zambia: Landon.')
+
+# Answer C: Venezuela: Landon Yemen: Novetzke Zambia: Ong
+def answer_c():
+    for solution in solutions:
+        if solution['Venezuela'] == 'Landon' and solution['Yemen'] == 'Novetzke' and solution['Zambia'] == 'Ong':
+            return True
+    return False
+#print(answer_c())
+print(str(answer_c()) + ' - Answer C: Venezuela: Landon Yemen: Novetzke Zambia: Ong.')
+
+# Answer D: Venezuela: Novetzke Yemen: Jaramillo Zambia: Kayne
+def answer_d():
+    for solution in solutions:
+        if solution['Venezuela'] == 'Novetzke' and solution['Yemen'] == 'Jaramillo' and solution['Zambia'] == 'Kayne':
+            return True
+    return False
+#print(answer_d())
+print(str(answer_d()) + ' - Answer D: Venezuela: Novetzke Yemen: Jaramillo Zambia: Kayne.')
+
+# Answer E: Venezuela: Ong Yemen: Kayne Zambia: Landon
+def answer_e():
+    for solution in solutions:
+        if solution['Venezuela'] == 'Ong' and solution['Yemen'] == 'Kayne' and solution['Zambia'] == 'Landon':
+            return True
+    return False
+#print(answer_e())
+print(str(answer_e()) + ' - Answer E: Venezuela: Ong Yemen: Kayne Zambia: Landon.')
