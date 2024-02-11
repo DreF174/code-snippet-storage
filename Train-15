@@ -1,0 +1,164 @@
+# Step 0- Identify the question: It is FULLY DETERMINED which of the shelves each of the books is placed on if which one of the following is true?
+
+# Step 1. Identify the rules and constraints in the problem, including any contained in the question:
+#Rule 1: Exactly eight books—F, G, H, I, K, L, M, O—are placed on a bookcase with exactly three shelves—the top shelf, the middle shelf, and the bottom shelf.
+#Rule 2: At least two books are placed on each shelf.
+#Rule 3: More of the books are placed on the bottom shelf than the top shelf.
+#Rule 4: I is placed on the middle shelf.
+#Rule 5: K is placed on a higher shelf than F.
+#Rule 6: O is placed on a higher shelf than L.
+#Rule 7: F is placed on the same shelf as M.
+#Question Rule: The question requires the placement of all books to be fully determined.
+
+# Step 2. Identify each of the answer choices:
+#Answer A: I and M are placed on the same shelf as each other.
+#Answer B: K and G are placed on the same shelf as each other.
+#Answer C: L and F are placed on the same shelf as each other.
+#Answer D: M and H are placed on the same shelf as each other.
+#Answer E: H and O are placed on the same shelf as each other.
+
+# Step 3. Create a new `Problem` instance. This will be the object where you define your variables and constraints.
+problem = Problem()
+
+# Step 4. Identify the LSAT game type and explain why.
+# This game type is an assignment game because the participants are books being assigned shelves given certain rules and constraints.
+
+# Step 5. Identify and define the variables of the problem.
+# Define the variables.
+# The variables are the books.
+books = ['F', 'G', 'H', 'I', 'K', 'L', 'M', 'O']
+# Define the domains.
+# Their domains are the shelves.
+shelves = ['top shelf', 'middle shelf', 'bottom shelf']
+
+#Step 6. # Identify any domains that require ordering and create a dictionary mapping numbers to the objects in the domain.
+# In this case, the shelves need to be ordered, so we will create a dictionary mapping numbers to the shelves.
+# Create a dictionary mapping the shelves to numbers
+shelves = {1: 'bottom shelf', 2: 'middle shelf', 3: 'top shelf'}
+
+# Step 7. Add variables and domains to the problem
+for book in books:
+    problem.addVariable(book, shelves)
+
+# Step 8. Add the orignal constraints. Each rule translates to a constraint in your problem.
+
+#Rule 1: Exactly eight books—F, G, H, I, K, L, M, O—are placed on a bookcase with exactly three shelves—the top shelf, the middle shelf, and the bottom shelf.
+#This rule is already satisfied by the variables and domains we defined above.
+
+#Rule 2: At least two books are placed on each shelf.
+def rule_2_constraint(f, g, h, i, k, l, m, o):
+    # If the number of books on the top shelf is less than two
+    if [f, g, h, i, k, l, m, o].count(3) < 2:
+        # Then the rule is not satisfied
+        return False
+    # If the number of books on the middle shelf is less than two
+    if [f, g, h, i, k, l, m, o].count(2) < 2:
+        # Then the rule is not satisfied
+        return False
+    # If the number of books on the bottom shelf is less than two
+    if [f, g, h, i, k, l, m, o].count(1) < 2:
+        # Then the rule is not satisfied
+        return False
+    return True
+# Add the constraint to the problem
+problem.addConstraint(rule_2_constraint, ('F', 'G', 'H', 'I', 'K', 'L', 'M', 'O'))
+
+#Rule 3: More of the books are placed on the bottom shelf than the top shelf.
+def rule_3_constraint(f, g, h, i, k, l, m, o):
+    # If the number of books on the bottom shelf is less than the number of books on the top shelf
+    if [f, g, h, i, k, l, m, o].count(1) > [f, g, h, i, k, l, m, o].count(3):
+        # Then the rule is not satisfied
+        return True
+    return False
+# Add the constraint to the problem
+problem.addConstraint(rule_3_constraint, ('F', 'G', 'H', 'I', 'K', 'L', 'M', 'O'))
+
+#Rule 4: I is placed on the middle shelf.
+# I must be placed on the middle shelf
+problem.addConstraint(lambda i: i == 2, ('I',))
+
+#Rule 5: K is placed on a higher shelf than F.
+# K must be placed on a higher shelf than F
+problem.addConstraint(lambda k, f: k > f, ('K', 'F'))
+
+#Rule 6: O is placed on a higher shelf than L.
+# O must be placed on a higher shelf than L
+problem.addConstraint(lambda o, l: o > l, ('O', 'L'))
+
+#Rule 7: F is placed on the same shelf as M.
+# F must be placed on the same shelf as M
+problem.addConstraint(lambda f, m: f == m, ('F', 'M'))
+
+# Question Rule: The question requires the placement of all books to be fully determined.
+
+# Step 9. Determine all possible solutions that exist after applying the original rules stated above. These rules and constraints will be assumed and imposed on the answer choices below
+
+solutions = problem.getSolutions()
+#print first 10 solutions
+#print("The first 10 possible solutions are: " + str(solutions[:10]))
+#print("The possible solutions are: " + str(solutions))
+#count the number of solutions
+print("problem_201110_2-G_4_20_A (Fully Determined) The number of possible solutions is: " + str(len(solutions)))
+
+# Step 10: Determine if each answer choice by adding the rule constraint, and checking to see how many solutions are possible if the constraint is true. If
+
+# Answer A. I and M are placed on the same shelf as each other.
+#check  to see how many solutions are possible if this answer choice is true
+def answer_a():
+    for solution in solutions:
+        if solution['I'] == solution['M']:
+            #if the sum of the number of solutions that satisfy the constraint is equal to 1 then return True
+            if len([solution for solution in solutions if solution['I'] == solution['M']]) == 1:
+                return True
+    return False
+#print(answer_a())
+print(str(answer_a()) + ' - Answer A: I and M are placed on the same shelf as each other.')
+        
+# Answer B. K and G are placed on the same shelf as each other.
+#check  to see how many solutions are possible if this answer choice is true
+def answer_b():
+    for solution in solutions:
+        if solution['K'] == solution['G']:
+            #return the sum of the number of solutions that satisfy the constraint
+            if len([solution for solution in solutions if solution['K'] == solution['G']]) == 1:
+                return True
+    return False
+        
+#print(answer_b())
+print(str(answer_b()) + ' - Answer B: K and G are placed on the same shelf as each other.')
+
+# Answer C. L and F are placed on the same shelf as each other.
+#check  to see how many solutions are possible if this answer choice is true
+def answer_c():
+    for solution in solutions:
+        if solution['L'] == solution['F']:
+            #return the sum of the number of solutions that satisfy the constraint
+            if len([solution for solution in solutions if solution['L'] == solution['F']]) == 1:
+                return True
+    return False
+#print(answer_c())
+print(str(answer_c()) + ' - Answer C: L and F are placed on the same shelf as each other.')
+
+# Answer D. M and H are placed on the same shelf as each other.
+#check  to see how many solutions are possible if this answer choice is true
+def answer_d():
+    for solution in solutions:
+        if solution['M'] == solution['H']:
+            #return the sum of the number of solutions that satisfy the constraint
+            if len([solution for solution in solutions if solution['M'] == solution['H']]) == 1:
+                return True
+    return False
+#print(answer_d())
+print(str(answer_d()) + ' - Answer D: M and H are placed on the same shelf as each other.')
+
+# Answer E. H and O are placed on the same shelf as each other.
+#check  to see how many solutions are possible if this answer choice is true
+def answer_e():
+    for solution in solutions:
+        if solution['H'] == solution['O']:
+            #return the sum of the number of solutions that satisfy the constraint
+            if len([solution for solution in solutions if solution['H'] == solution['O']]) == 1:
+                return True
+    return False
+#print(answer_e())
+print(str(answer_e()) + ' - Answer E: H and O are placed on the same shelf as each other.')
