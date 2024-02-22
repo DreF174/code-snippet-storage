@@ -6,8 +6,8 @@ Passage: Five cashiers-Adams, Bates, Cox, Drake, and Edwards-each of whom works 
 # Step 2. Identify the LSAT game type and explain why.
 # This game type is an assignment game because the participants are cashiers being assigned days of the week to work given certain rules and constraints.
 
+#From reading the passage, we can discern that the variables we will be working with will be "Adams, Bates, Cox, Drake, Edwards"  As "Cashiers" and "Monday - Friday " As the possible "Work days" for the cashiers to be placed in:
 # Step 3. Identify and define the variables of the problem.
-# Define the variables
 # The variables are the cashiers
 cashiers = ['Adams', 'Bates', 'Cox', 'Drake', 'Edwards']
 # Define the domains
