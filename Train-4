@@ -2,10 +2,11 @@ from constraint import Problem
 
 # Step 1. Create a new `Problem` instance. This will be the object where you define your variables and constraints.
 problem = Problem()
-
+# Passage: A loading dock consists of exactly six bays numbered 1 through 6 consecutively from one side of the dock to the other. Each bay is holding a different one of exactly six types of cargo fuel, grain, livestock, machinery, produce, or textiles. The following apply: The bay holding grain has a higher number than the bay holding livestock. The bay holding livestock has a higher number than the bay holding textiles. The bay holding produce has a higher number than the bay holding fuel. The bay holding textiles is next to the bay holding produce. Question: Which one of the following CANNOT be the type of cargo held in bay 4? A.\"grain\", B.\"livestock\", C.\"machinery\", D.\"produce\", E.\"textiles
 # Step 2. Identify the LSAT game type and explain why.
 # This game type is an assignment game because the participants are cargo being assigned to a certain bay,given certain rules and constraints.
 
+#From reading the passage, we can discern that the variables we will be working with will be "Fuel, Grain, Livestock, Machinery, Produce, Textiles"  As "Cargos" and "One - Six " As the possible "Bays" for the cargos to be placed in:
 # Step 3. Identify and define the variables of the problem.
 # Define the variables
 # The variables are the cargo
@@ -14,15 +15,18 @@ cargos = ['fuel', 'grain', 'livestock', 'machinery', 'produce', 'textiles']
 # Their domains are the bays they can be assigned to.
 bays = ['one', 'two', 'three', 'four', 'five', 'six']
 
+# After reading the passage, you will need to follow the information it gave you to properly create the constraints required to solve the problem:
 #Step 4. # Identify any domains that require ordering and create a dictionary mapping numbers to the objects in the domain.
 # In this case, the cargo needs to be ordered in the bays, so we will create a dictionary mapping numbers to each bay.
 # Create a dictionary mapping the bays to numbers
 bays = {1: 'one', 2: 'two', 3: 'three', 4: 'four', 5: 'five', 6: 'six'}
 
+# After creating the constraints, make sure to create the function to determine the possible solutions to the question:
 # Step 5. Add variables and domains to the problem
 for cargo in cargos:
     problem.addVariable(cargo, bays)
-    
+
+#Then you create the question constraint that MUST be followed, and create the functions for each possible answer to see if it will be marked as true or false:
 # Step 6. Add the orignal constraints. Each rule translates to a constraint in your problem.
 
 #Rule 1: Each bay is holding a different one of exactly six types of cargo
