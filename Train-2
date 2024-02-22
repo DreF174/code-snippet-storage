@@ -3,6 +3,8 @@ from constraint import *
 # Step 1: Create a new Problem instance
 problem = Problem()
 
+Passage: A professor must determine the order in which five of her students -Fernando, Ginny, Hakim, Juanita, and Kevin- will perform in a recital. Ginny perform earlier than Fernando. Kevin perform earlier than Hakim and Juanita. Hakim perform either immediately before or immediately after Fernando.\n# Question: Which one of the following could be the order the students perform? A) Ginny, Fernando, Hakim, Kevin, Juanita. B) Ginny, Juanita, Kevin, Hakim, Fernando. C) Ginny, Kevin, Hakim, Juanita, Fernando. D) Kevin, Ginny, Juanita, Fernando, Hakim. E) Kevin, Juanita, Fernando, Hakim, Ginny.
+#From reading the passage, we can discern that the variables we will be working with will be "Fernando,Ginny,Hakim,Juanita,Kevin"  As "Students" and "1 - 5 " As the possible "Positions" for the students to be placed in:
 # Step 2: Identify and define the variables of the problem
 students = ['Fernando', 'Ginny', 'Hakim', 'Juanita', 'Kevin']
 
@@ -10,6 +12,7 @@ students = ['Fernando', 'Ginny', 'Hakim', 'Juanita', 'Kevin']
 for student in students:
     problem.addVariable(student, list(range(1, 6)))  # Positions are 1 to 5
 
+# After reading the passage, you will need to follow the information it gave you to properly create the constraints required to solve the problem:
 # Step 4: Add the original constraints
 # Rule 1: Each student performs in a different order
 problem.addConstraint(AllDifferentConstraint())
@@ -23,9 +26,11 @@ problem.addConstraint(lambda k, h, j: k < h and k < j, ('Kevin', 'Hakim', 'Juani
 # Rule 4: Hakim performs either immediately before or immediately after Fernando
 problem.addConstraint(lambda h, f: abs(h - f) == 1, ('Hakim', 'Fernando'))
 
+# After creating the constraints, make sure to create the function to determine the possible solutions to the question:
 # Step 5: Determine all possible solutions
 solutions = problem.getSolutions()
 
+#Then you create the question constraint that MUST be followed, and create the functions for each possible answer to see if it will be marked as true or false:
 # Step 6: Answer the question
 def answer_a(solutions):
     for solution in solutions:
