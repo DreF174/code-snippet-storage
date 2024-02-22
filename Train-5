@@ -2,25 +2,29 @@ from constraint import Problem
 
 # Step 1. Create a new `Problem` instance. This will be the object where you define your variables and constraints.
 problem = Problem()
-
+# Passage:  Of the eight students\u2014George, Helen, Irving, Kyle, Lenore, Nina, Olivia, and Robert\u2014in a seminar, exactly six will give individual oral reports during three consecutive days\u2014Monday, Tuesday, and Wednesday. Exactly two reports will be given each day\u2014one in the morning and one in the afternoon\u2014according to the following conditions: Tuesday is the only day on which George can give a report. Neither Olivia nor Robert can give an afternoon report. If Nina gives a report, then on the next day Helen and Irving must both give reports, unless Nina's report is given on Wednesday.\tIf Kyle and Lenore do not give reports, then the morning reports on Monday, Tuesday, and Wednesday, respectively, could be given by?\tA: Helen, George, and Nina.\tB. Irving, Robert, and Helen. C. Nina, Helen, and Olivia. D. Olivia, Robert, and Irving\tE. Robert, George, and Helen.
 # Step 2. Identify the LSAT game type and explain why.
 # This game type is an assignment game because the participants are students being assigned days and times to give oral reports given certain rules and constraints.
 
+#From reading the passage, we can discern that the variables we will be working with will be "George,Helen,Irving,Kyle,Lenore,Nina,Olivia,Robert"  As "Students" and "Monday Morning / Monday Afternoon - Wednesday Morning / Wednesday Afternoon" As the possible "Days and Times" for the students to be placed in:
 # Step 3. Identify and define the variables of the problem. In this case, the variables are the students, and their domains are the days and times they can give oral reports.
 # Define the variables
 students = ['George', 'Helen', 'Irving', 'Kyle', 'Lenore', 'Nina', 'Olivia', 'Robert']
 # Define the domains
 days_and_times = ['Monday morning', 'Monday afternoon', 'Tuesday morning', 'Tuesday afternoon', 'Wednesday morning', 'Wednesday afternoon']
 
+# After reading the passage, you will need to follow the information it gave you to properly create the constraints required to solve the problem:
 #Step 4. # Identify any domains that require ordering and create a dictionary mapping numbers to the objects in the domain.
 # In this case, the days and times need to be ordered, so we will create a dictionary mapping numbers to the days and times.
 # Create a dictionary mapping the days and times to numbers
 days_and_times = {1: 'Monday morning', 2: 'Monday afternoon', 3: 'Tuesday morning', 4: 'Tuesday afternoon', 5: 'Wednesday morning', 6: 'Wednesday afternoon'}
 
+# After creating the constraints, make sure to create the function to determine the possible solutions to the question:
 # Step 5. Add variables and domains to the problem
 for student in students:
     problem.addVariable(student, days_and_times)
 
+#Then you create the question constraint that MUST be followed, and create the functions for each possible answer to see if it will be marked as true or false:
 # Step 6. Add the orignal constraints. Each rule translates to a constraint in your problem.
 
 #Rule 1: Exactly six students will give individual oral reports during three consecutive days—Monday, Tuesday, and Wednesday.
