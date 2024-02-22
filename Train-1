@@ -19,6 +19,8 @@ from constraint import Problem
 # Step 1: Create a new Problem instance
 problem = Problem()
 
+# Passage: Seven directors -A, B, C, D, E, F and G- serves on the X committee or the Y committee. If A serves on X, then B serves on Y.  If C serves on X, then D and E serve on Y. F serves on a different committee with G. E serves on a different committee with A. If G serves on X, so does B.\n# Question: If D and F both serve on the X committee, then which one of the following could be true? Options: \"A and C both serve on the X committee.\" \"A and E both serve on the Y committee.\" \"B and G both serve on the X committee.\" \"C and E both serve on the Y committee.\" \"G and E both serve on the X committee.
+#From reading the passage, we can discern that the variables we will be working with will be "A,B,C,D,E,F,G" As "Directors" and "1, 2" As the committees for the directors to be placed in:
 # Step 2: Identify and define the variables
 directors = ['A', 'B', 'C', 'D', 'E', 'F', 'G']
 # Define the domains
@@ -28,6 +30,7 @@ committees = [1, 2]  # 1 for X, 2 for Y
 for director in directors:
     problem.addVariable(director, committees)
 
+# After reading the passage, you will need to follow the information it gave you to properly create the constraints required to solve the problem:
 # Step 4: Add the original constraints
 # Rule 2: If A serves on X (1), then B serves on Y (2)
 problem.addConstraint(lambda a, b: b == 2 if a == 1 else True, ('A', 'B'))
@@ -40,6 +43,7 @@ problem.addConstraint(lambda e, a: e != a, ('E', 'A'))
 # Rule 6: If G serves on X (1), so does B
 problem.addConstraint(lambda g, b: b == 1 if g == 1 else True, ('G', 'B'))
 
+# After creating the constraints, make sure to create the function to determine the possible solutions to the question:
 # Step 5: Determine all possible solutions
 solutions = problem.getSolutions()
 
@@ -51,7 +55,7 @@ def answer_checker(question_constraint, answer_constraint):
                 return True
     return False
 
-# Define question constraint
+#Then you create the question constraint that MUST be followed, and create the functions for each possible answer to see if it will be marked as true or false:
 question_constraint = lambda sol: sol['D'] == 1 and sol['F'] == 1  # D and F both serve on X
 
 # Answer A: A and C both serve on the X committee
