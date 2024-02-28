@@ -1,3 +1,6 @@
+#Before starting, import the `constraint` python module:
+from constraint import * 
+
 # Step 0- Identify the question: It is FULLY DETERMINED which of the shelves each of the books is placed on if which one of the following is true?
 
 # Step 1. Identify the rules and constraints in the problem, including any contained in the question:
