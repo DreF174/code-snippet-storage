@@ -1,3 +1,6 @@
+#Before starting, import the `constraint` python module:
+from constraint import *
+
 # Step 1. Create a new `Problem` instance. This will be the object where you define your variables and constraints.
 problem = Problem()
 
