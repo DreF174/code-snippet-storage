@@ -1,0 +1,156 @@
+#Before starting, import the `constraint` python module:
+from constraint import Problem
+
+# Identify the question: Which one of the following MUST be true?
+
+# Identify the rules and constraints in the problem, including any contained in the question:
+#Rule 1: Exactly eight books—F, G, H, I, K, L, M, O—are placed on a bookcase with exactly three shelves—the top shelf, the middle shelf, and the bottom shelf.
+#Rule 2: At least two books are placed on each shelf.
+#Rule 3: More of the books are placed on the bottom shelf than the top shelf.
+#Rule 4: I is placed on the middle shelf.
+#Rule 5: K is placed on a higher shelf than F.
+#Rule 6: O is placed on a higher shelf than L.
+#Rule 7: F is placed on the same shelf as M.
+#Question Rule: The question does not contain any additional rules.
+
+# Step 1. Identify each of the answer choices:
+#Answer A: O is placed on a shelf higher than the shelf M is placed on.
+#Answer B: K is placed on a shelf higher than the shelf G is placed on.
+#Answer C: I is placed on a shelf higher than the shelf F is placed on.
+#Answer D: G is placed on a shelf higher than the shelf O is placed on.
+#Answer E: F is placed on a shelf higher than the shelf L is placed on.
+
+# Step 2. Create a new `Problem` instance. This will be the object where you define your variables and constraints.
+problem = Problem()
+
+# Step 3. Identify the LSAT game type and explain why.
+# This game type is an assignment game because the participants are books being assigned shelves given certain rules and constraints.
+
+# Step 4. Identify and define the variables of the problem.
+# Define the variables.
+# The variables are the books.
+books = ['F', 'G', 'H', 'I', 'K', 'L', 'M', 'O']
+# Define the domains.
+# Their domains are the shelves.
+shelves = ['bottom shelf', 'middle shelf', 'top shelf']
+
+#Step 5. # Identify any domains that require ordering and create a dictionary mapping numbers to the objects in the domain.
+# In this case, the shelves need to be ordered, so we will create a dictionary mapping numbers to the shelves.
+# Create a dictionary mapping the shelves to numbers
+shelves = {1: 'bottom shelf', 2: 'middle shelf', 3: 'top shelf'}
+
+# Step 6. Add variables and domains to the problem
+for book in books:
+    problem.addVariable(book, shelves)
+
+# Step 7. Add the orignal constraints. Each rule translates to a constraint in your problem.
+
+#Rule 1: Exactly eight books—F, G, H, I, K, L, M, O—are placed on a bookcase with exactly three shelves—the top shelf, the middle shelf, and the bottom shelf.
+#This rule is already satisfied by the variables and domains we defined above.
+
+#Rule 2: At least two books are placed on each shelf.
+def rule_2_constraint(f, g, h, i, k, l, m, o):
+    # If the number of books on the top shelf is less than two
+    if [f, g, h, i, k, l, m, o].count(3) < 2:
+        # Then the rule is not satisfied
+        return False
+    # If the number of books on the middle shelf is less than two
+    if [f, g, h, i, k, l, m, o].count(2) < 2:
+        # Then the rule is not satisfied
+        return False
+    # If the number of books on the bottom shelf is less than two
+    if [f, g, h, i, k, l, m, o].count(1) < 2:
+        # Then the rule is not satisfied
+        return False
+    return True
+# Add the constraint to the problem
+problem.addConstraint(rule_2_constraint, ('F', 'G', 'H', 'I', 'K', 'L', 'M', 'O'))
+
+#Rule 3: More of the books are placed on the bottom shelf than the top shelf.
+def rule_3_constraint(f, g, h, i, k, l, m, o):
+    # If the number of books on the bottom shelf is less than the number of books on the top shelf
+    if [f, g, h, i, k, l, m, o].count(1) > [f, g, h, i, k, l, m, o].count(3):
+        # Then the rule is not satisfied
+        return True
+    return False
+# Add the constraint to the problem
+problem.addConstraint(rule_3_constraint, ('F', 'G', 'H', 'I', 'K', 'L', 'M', 'O'))
+
+#Rule 4: I is placed on the middle shelf.
+# I must be placed on the middle shelf
+problem.addConstraint(lambda i: i == 2, ('I',))
+
+#Rule 5: K is placed on a higher shelf than F.
+# K must be placed on a higher shelf than F
+problem.addConstraint(lambda k, f: k > f, ('K', 'F'))
+
+#Rule 6: O is placed on a higher shelf than L.
+# O must be placed on a higher shelf than L
+problem.addConstraint(lambda o, l: o > l, ('O', 'L'))
+
+#Rule 7: F is placed on the same shelf as M.
+# F must be placed on the same shelf as M
+problem.addConstraint(lambda f, m: f == m, ('F', 'M'))
+
+# Question Rule: The question does not contain any additional rules.
+
+# Step 8. Determine all possible solutions that exist after applying the original rules stated above. These rules and constraints will be assumed and imposed on the answer choices below
+
+solutions = problem.getSolutions()
+#print first 10 solutions
+#print("The first 10 possible solutions are: " + str(solutions[:10]))
+#print("The possible solutions are: " + str(solutions))
+#count the number of solutions
+print("problem_201110_2-G_4_21_A (Must Be True) The number of possible solutions is: " + str(len(solutions)))
+
+# Step 9: Determine if each answer choice by adding the rule constraint, and checking to see if any of the answers solutions MUST be true by checking to see if there are any solutions that DO NOT satisfy the constraint. If NONE of the solutions violate the constraint, then the answer choice MUST be true, if not return False.
+
+# Answer A. O is placed on a shelf higher than the shelf M is placed on.
+#check to see if there are any solutions that DO NOT satisfy the constraint, if so return False
+def answer_a():
+    for solution in solutions:
+        if solution['O'] <= solution['M']:
+            return False
+    return True
+#print(answer_a())
+print(str(answer_a()) + ' - Answer A: O is placed on a shelf higher than the shelf M is placed on.')
+
+# Answer B. K is placed on a shelf higher than the shelf G is placed on.
+#check to see if there are any solutions that DO NOT satisfy the constraint, if so return False
+def answer_b():
+    for solution in solutions:
+        if solution['K'] <= solution['G']:
+            return False
+    return True
+#print(answer_b())
+print(str(answer_b()) + ' - Answer B: K is placed on a shelf higher than the shelf G is placed on.')
+
+# Answer C. I is placed on a shelf higher than the shelf F is placed on.
+#check to see if there are any solutions that DO NOT satisfy the constraint, if so return False
+def answer_c():
+    for solution in solutions:
+        if solution['I'] <= solution['F']:
+            return False
+    return True
+#print(answer_c())
+print(str(answer_c()) + ' - Answer C: I is placed on a shelf higher than the shelf F is placed on.')
+
+# Answer D. G is placed on a shelf higher than the shelf O is placed on.
+#check to see if there are any solutions that DO NOT satisfy the constraint, if so return False
+def answer_d():
+    for solution in solutions:
+        if solution['G'] <= solution['O']:
+            return False
+    return True
+#print(answer_d())
+print(str(answer_d()) + ' - Answer D: G is placed on a shelf higher than the shelf O is placed on.')
+
+# Answer E. F is placed on a shelf higher than the shelf L is placed on.
+#check to see if there are any solutions that DO NOT satisfy the constraint, if so return False
+def answer_e():
+    for solution in solutions:
+        if solution['F'] <= solution['L']:
+            return False
+    return True
+#print(answer_e())
+print(str(answer_e()) + ' - Answer E: F is placed on a shelf higher than the shelf L is placed on.')
