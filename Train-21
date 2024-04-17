@@ -1,0 +1,193 @@
+#Before starting, import the `constraint` python module:
+from constraint import Problem
+
+# Identify the question: If O is performed immediately after T, then F MUST be performed either
+
+# Identify the rules and constraints in the problem, including any contained in the question:
+#Rule 1: At a concert, exactly eight compositions—F, H, L, O, P, R, S, and T—are to be performed exactly once each, consecutively and one composition at a time.
+#Rule 2: T is performed either immediately before F or immediately after R.
+#Rule 3: At least two compositions are performed either after F and before R, or after R and before F.
+#Rule 4: O is performed either first or fifth.
+#Rule 5: The eighth composition performed is either L or H.
+#Rule 6: P is performed at some time before S.
+#Rule 7: At least one composition is performed either after O and before S, or after S and before O.
+#Question Rule: If O is performed immediately after T, then F MUST be performed either
+
+# Identify each of the answer choices:
+#Answer A: first or second
+#Answer B: second or third
+#Answer C: fourth or sixth
+#Answer D: fourth or seventh
+#Answer E: sixth or seventh
+
+# Step 1. Create a new `Problem` instance. This will be the object where you define your variables and constraints.
+problem = Problem()
+
+# Step 2. Identify the LSAT game type and explain why.
+# This game type is an ordering game because the participants are compositions being ordered given certain rules and constraints.
+
+# Step 3. Identify and define the variables of the problem.
+# Define the variables.
+# The variables are the compositions.
+compositions = ['F', 'H', 'L', 'O', 'P', 'R', 'S', 'T']
+# Define the domains.
+# Their domains are the positions.
+positions = ['1st', '2nd', '3rd', '4th', '5th', '6th', '7th', '8th']
+
+#Step 4. # Identify any domains that require ordering and create a dictionary mapping numbers to the objects in the domain.
+# In this case, the positions need to be ordered, so we will create a dictionary mapping numbers to the positions.
+# Create a dictionary mapping the positions to numbers
+positions = {1: '1st', 2: '2nd', 3: '3rd', 4: '4th', 5: '5th', 6: '6th', 7: '7th', 8: '8th'}
+
+# Step 5. Add variables and domains to the problem
+for composition in compositions:
+    problem.addVariable(composition, positions)
+    
+# Step 6. Add the orignal constraints. Each rule translates to a constraint in your problem.
+
+#Rule 1: At a concert, exactly eight compositions—F, H, L, O, P, R, S, and T—are to be performed exactly once each, consecutively and one composition at a time.
+problem.addConstraint(AllDifferentConstraint(), compositions)
+
+#Rule 2: T is performed either immediately before F or immediately after R.
+# Add a constraint that ensures that T is performed either immediately before F or immediately after R.
+def rule_2_constraint(t, f, r):
+    # If T is performed immediately before F
+    if t == f - 1:
+        return True
+    # If T is performed immediately after R
+    if t == r + 1:
+        return True
+    return False
+# Add the constraint to the problem
+problem.addConstraint(rule_2_constraint, ('T', 'F', 'R'))
+
+#Rule 3: At least two compositions are performed either after F and before R, or after R and before F.
+# Add a constraint that ensures that at least two compositions are performed either after F and before R, or after R and before F.
+def rule_3_constraint(f, r):
+    # If at least two compositions are performed after F and before R
+    if r - f > 2:
+        return True
+    # If at least two compositions are performed after R and before F
+    if f - r > 2:
+        return True
+    return False
+# Add the constraint to the problem
+problem.addConstraint(rule_3_constraint, ('F', 'R'))
+
+#Rule 4: O is performed either first or fifth.
+# Add a constraint that ensures that O is performed either first or fifth.
+def rule_4_constraint(o):
+    # If O is performed first
+    if o == 1:
+        return True
+    # If O is performed fifth
+    if o == 5:
+        return True
+    return False
+# Add the constraint to the problem
+problem.addConstraint(rule_4_constraint, ('O',))
+
+#Rule 5: The eighth composition performed is either L or H.
+# Add a constraint that ensures that the eighth composition performed is either L or H.
+def rule_5_constraint(l, h):
+    # If the eighth composition performed is L
+    if l == 8:
+        return True
+    # If the eighth composition performed is H
+    if h == 8:
+        return True
+    return False
+# Add the constraint to the problem
+problem.addConstraint(rule_5_constraint, ('L', 'H'))
+
+#Rule 6: P is performed at some time before S.
+# Add a constraint that ensures that P is performed at some time before S.
+def rule_6_constraint(p, s):
+    # If P is performed before S
+    if p < s:
+        return True
+    return False
+# Add the constraint to the problem
+problem.addConstraint(rule_6_constraint, ('P', 'S'))
+
+#Rule 7: At least one composition is performed either after O and before S, or after S and before O.
+# Add a constraint that ensures that at least one composition is performed either after O and before S, or after S and before O.
+def rule_7_constraint(o, s):
+    # If at least one composition is performed after O and before S
+    if s - o > 1:
+        return True
+    # If at least one composition is performed after S and before O
+    if o - s > 1:
+        return True
+    return False
+# Add the constraint to the problem
+problem.addConstraint(rule_7_constraint, ('O', 'S'))
+
+# Question Rule: If O is performed immediately after T, then F must be performed either
+# To add the question rule, we assume that the rule is triggered and add it as a constraint to the problem.
+def question_rule_constraint(o, t, f):
+    # If O is performed immediately after T
+    if o == t + 1:
+       return True
+    return False
+# Add the constraint to the problem
+problem.addConstraint(question_rule_constraint, ('O', 'T', 'F'))
+
+# Step 7. Determine all possible solutions that exist after applying the original rules stated above. These rules and constraints will be assumed and imposed on the answer choices below
+
+solutions = problem.getSolutions()
+#print first 10 solutions
+#print("The first 10 possible solutions are: " + str(solutions[:10]))
+#print("The possible solutions are: " + str(solutions))
+
+# Step 8: Determine if each answer choice by adding the rule constraint, and checking to see if any of the answers solutions MUST be true by checking to see if there are any solutions that DO NOT satisfy the constraint. If NONE of the solutions violate the constraint, then the answer choice MUST be true, if not return False.
+
+# Answer A. F must be performed either first or second
+#check to see if there are any solutions that DO NOT satisfy the constraint, if so return False
+def answer_a():
+    for solution in solutions:
+        if solution['F'] != 1 and solution['F'] != 2:
+            return False
+    return True
+#print(answer_a())
+print(str(answer_a()) + ' - Answer A: first or second')
+
+# Answer B. F must be performed either second or third
+#check to see if there are any solutions that DO NOT satisfy the constraint, if so return False
+def answer_b():
+    for solution in solutions:
+        if solution['F'] != 2 and solution['F'] != 3:
+            return False
+    return True
+#print(answer_b())
+print(str(answer_b()) + ' - Answer B: second or third')
+
+# Answer C. F must be performed either fourth or sixth
+#check to see if there are any solutions that DO NOT satisfy the constraint, if so return False
+def answer_c():
+    for solution in solutions:
+        if solution['F'] != 4 and solution['F'] != 6:
+            return False
+    return True
+#print(answer_c())
+print(str(answer_c()) + ' - Answer C: fourth or sixth')
+
+# Answer D. F must be performed either fourth or seventh
+#check to see if there are any solutions that DO NOT satisfy the constraint, if so return False
+def answer_d():
+    for solution in solutions:
+        if solution['F'] != 4 and solution['F'] != 7:
+            return False
+    return True
+#print(answer_d())
+print(str(answer_d()) + ' - Answer D: fourth or seventh')
+
+# Answer E. F must be performed either sixth or seventh
+#check to see if there are any solutions that DO NOT satisfy the constraint, if so return False
+def answer_e():
+    for solution in solutions:
+        if solution['F'] != 6 and solution['F'] != 7:
+            return False
+    return True
+#print(answer_e())
+print(str(answer_e()) + ' - Answer E: sixth or seventh')
