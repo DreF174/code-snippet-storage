@@ -1,10 +1,12 @@
-# Task: Solve the LSAT problems below using Python:
+# Task: You are an expert in translating LSAT Logic Games into python using the python constraint library. Your task is to generate the code for a python constraint satisfaction problem following the ten steps as follows. Make sure you add  comments to your code. The following logic games have been provided as examples.
 
-# There are 3 basic types of LSAT logic games: ordering games, grouping games, and assignment games.
-# Ordering games are to order participants based on given facts and rules.
-# Grouping games are to separate participants into groups with given facts and rules.
-# Assignment games are to assign characteristics to the participants with given rules, like assigning schedules for people.
-# Constraint satisfaction problems in Python are very adept at LSAT logic.
+# There are 7 different types of LSAT logic games: ordering games, grouping games, and assignment games.
+
+#Relative-Ordering: Ordering a set of variables relative to each other. Simple-Ordering: Ordering a set of variables relative to fixed positions. Comple-Ordering: Ordering two or more sets of variables relative to fixed positions.
+
+#In/Out-Grouping: Assigning each entity to exacrtly one of two groups primarily through the application of conditional statements. Distribution-Grouping: Assigning each entity to exactly one of a given number of groups. 
+
+#Determined-Assignment: The exact number of each variable to be placed in the diagram can be deduced from the setup and conditions. Undetermined-Assignment: The exact number of each variable to be placed in the diagram is left open by the setup and conditions and can vary from question to question.
 # Constraint satisfaction problems are a type of problem that require you to assign values to variables in order to satisfy a set of constraints.
 # Variables are the objects that you are assigning values to. 
 # Domains are the possible values that can be assigned to a variable.
@@ -19,19 +21,22 @@ from constraint import Problem
 # Step 1: Create a new Problem instance
 problem = Problem()
 
+# Step 2: There are 7 game types as follows: Relative Ordering, Simple Ordering, Complex Ordering, In/Out Grouping, Grouping Distribution, Determined assignment and UNdetermined assignment.
+
 # Passage: Seven directors -A, B, C, D, E, F and G- serves on the X committee or the Y committee. If A serves on X, then B serves on Y.  If C serves on X, then D and E serve on Y. F serves on a different committee with G. E serves on a different committee with A. If G serves on X, so does B.\n# Question: If D and F both serve on the X committee, then which one of the following could be true? Options: \"A and C both serve on the X committee.\" \"A and E both serve on the Y committee.\" \"B and G both serve on the X committee.\" \"C and E both serve on the Y committee.\" \"G and E both serve on the X committee.
 #From reading the passage, we can discern that the variables we will be working with will be "A,B,C,D,E,F,G" As "Directors" and "1, 2" As the committees for the directors to be placed in:
-# Step 2: Identify and define the variables
+# Step 3: Identify and define the variables
 directors = ['A', 'B', 'C', 'D', 'E', 'F', 'G']
 # Define the domains
 committees = [1, 2]  # 1 for X, 2 for Y
 
-# Step 3: Add variables and domains to the problem
+# Step 4: Add variables and domains to the problem
 for director in directors:
     problem.addVariable(director, committees)
 
 # After reading the passage, you will need to follow the information it gave you to properly create the constraints required to solve the problem:
-# Step 4: Add the original constraints
+# Step 5: Add the original constraints Each rule translates to a constraint in your problem.
+
 # Rule 2: If A serves on X (1), then B serves on Y (2)
 problem.addConstraint(lambda a, b: b == 2 if a == 1 else True, ('A', 'B'))
 # Rule 3: If C serves on X (1), then D and E serve on Y (2)
@@ -44,10 +49,15 @@ problem.addConstraint(lambda e, a: e != a, ('E', 'A'))
 problem.addConstraint(lambda g, b: b == 1 if g == 1 else True, ('G', 'B'))
 
 # After creating the constraints, make sure to create the function to determine the possible solutions to the question:
-# Step 5: Determine all possible solutions
+
+# Step 6: Identify any rules/Constraints in the question.
+
+# Step 7: Determine is all possible solutions that exist after applying the original rules and any rules contained in the question. These rules and constraints will be assumed and imposed on the answer choices.
 solutions = problem.getSolutions()
 
-# Step 6: Answer the questions
+# Step 8: Determine the type of answer the question calls for. The answer will be one from the list: Relative Ordering, Simple Ordering, Complex Ordering, In/Out Grouping, Grouping Distribution, Determined assignment and Undetermined assignment.
+
+# Step 9: Determine the correct answer by creating a function for each possible answer choice in order to determine whether each answer choice is true or false.
 def answer_checker(question_constraint, answer_constraint):
     for solution in solutions:
         if question_constraint(solution):
