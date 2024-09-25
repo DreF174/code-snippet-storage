@@ -1,3 +1,6 @@
+# Grouping Defined - Moving
+# 201110_2-G_2_7
+
 #Before starting, import the `constraint` python module:
 from constraints import * 
 
