@@ -1,3 +1,6 @@
+#Advanced Linear Balanced
+#201110_2-G_3_18
+
 #Before starting, import the `constraint` python module:
 from constraint import Problem
 
